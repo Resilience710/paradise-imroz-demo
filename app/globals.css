@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-bone text-ink font-body;
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Subtle paper texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/%3E%3C/svg%3E");
+    opacity: 0.04;
+    pointer-events: none;
+    z-index: 1000;
+    mix-blend-mode: multiply;
+  }
+
+  body.lang-tr .lang-en { display: none !important; }
+  body.lang-en .lang-tr { display: none !important; }
+}
+
+@layer components {
+  .display { @apply font-display font-light; }
+  .display-italic { @apply font-display font-light italic; }
+
+  .eyebrow {
+    @apply text-[0.72rem] tracking-[0.4em] uppercase text-terracotta font-medium mb-6 inline-block;
+  }
+  .eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 1px;
+    background: currentColor;
+    vertical-align: middle;
+    margin-right: 0.8rem;
+  }
+
+  .section-title {
+    @apply font-display font-light leading-[1.05] tracking-[-0.02em] mb-8 max-w-[900px];
+    font-size: clamp(2.4rem, 5vw, 4rem);
+  }
+  .section-title em {
+    @apply not-italic;
+    font-style: italic;
+    color: theme('colors.aegean');
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 1s cubic-bezier(0.2, 0.6, 0.3, 1), transform 1s cubic-bezier(0.2, 0.6, 0.3, 1);
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .btn-reserve {
+    @apply bg-ink text-bone border-0 px-6 py-3 font-body text-[0.8rem] tracking-[0.08em] uppercase cursor-pointer transition-colors no-underline inline-block;
+  }
+  .btn-reserve:hover { @apply bg-aegean; }
+
+  .btn-terracotta {
+    @apply bg-terracotta text-cream border-0 px-8 py-4 font-body text-[0.85rem] tracking-[0.15em] uppercase cursor-pointer transition-colors;
+  }
+  .btn-terracotta:hover { background: #a14e32; }
+
+  .lang-btn {
+    @apply bg-transparent border border-ink px-3 py-2 font-body text-[0.75rem] tracking-[0.08em] cursor-pointer text-ink transition-colors;
+  }
+  .lang-btn:hover { @apply bg-ink text-bone; }
+}
+
+/* react-day-picker overrides */
+.rdp {
+  --rdp-accent-color: theme('colors.terracotta');
+  --rdp-accent-background-color: theme('colors.terracotta');
+  margin: 0;
+}
+.rdp-day_selected,
+.rdp-day_range_start,
+.rdp-day_range_end {
+  background-color: theme('colors.terracotta') !important;
+  color: theme('colors.cream') !important;
+}
+.rdp-day_range_middle {
+  background-color: rgba(182, 91, 60, 0.15) !important;
+  color: theme('colors.ink') !important;
+}
+.rdp-day_disabled {
+  opacity: 0.3;
+  text-decoration: line-through;
+}

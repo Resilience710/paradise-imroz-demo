@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paradise Imroz · Gökçeada Butik Otel</title>
+<meta name="description" content="Gökçeada'nın merkezinde, 8 odalı bir butik otel. Yeşil bir bahçe, sade bir kahvaltı, denize beş dakika.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=DM+Sans:opsz,wght@9..40,300..600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bone: #f1eadc;
+    --cream: #faf5ea;
+    --ink: #1a1d1a;
+    --aegean: #2a4751;
+    --aegean-deep: #1d343c;
+    --terracotta: #b65b3c;
+    --muted: #7d756b;
+    --line: #d8cfbd;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    background: var(--bone);
+    color: var(--ink);
+    line-height: 1.6;
+    font-size: 16px;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Subtle paper texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/%3E%3C/svg%3E");
+    opacity: 0.04;
+    pointer-events: none;
+    z-index: 1000;
+    mix-blend-mode: multiply;
+  }
+
+  /* Language toggle visibility */
+  body.lang-tr .lang-en { display: none !important; }
+  body.lang-en .lang-tr { display: none !important; }
+
+  .display { font-family: 'Fraunces', serif; font-weight: 300; }
+  .display-italic { font-family: 'Fraunces', serif; font-weight: 300; font-style: italic; }
+
+  /* ============ NAV ============ */
+  .nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 1.4rem 2.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.4s ease, padding 0.4s ease;
+  }
+  .nav.scrolled {
+    background: rgba(241, 234, 220, 0.92);
+    backdrop-filter: blur(12px);
+    padding: 1rem 2.5rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-logo {
+    font-family: 'Fraunces', serif;
+    font-size: 1.4rem;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .nav-logo em {
+    font-style: italic;
+    color: var(--aegean);
+  }
+  .nav-right { display: flex; align-items: center; gap: 2rem; }
+  .nav-links { display: flex; gap: 1.8rem; }
+  .nav-links a {
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--aegean); }
+
+  .lang-toggle {
+    background: none;
+    border: 1px solid var(--ink);
+    padding: 0.45rem 0.9rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    color: var(--ink);
+    transition: all 0.2s;
+  }
+  .lang-toggle:hover { background: var(--ink); color: var(--bone); }
+
+  .reserve-btn {
+    background: var(--ink);
+    color: var(--bone);
+    border: none;
+    padding: 0.7rem 1.4rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .reserve-btn:hover { background: var(--aegean); }
+
+  /* ============ HERO ============ */
+  .hero {
+    height: 100vh;
+    min-height: 700px;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    padding: 4rem 2.5rem;
+    overflow: hidden;
+    background: var(--aegean-deep);
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background-image: url('https://images.unsplash.com/photo-1601581875309-fafbf2d3ed3a?w=2400&q=85&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center 40%;
+    opacity: 0.7;
+    transform: scale(1.05);
+    transition: transform 8s ease;
+  }
+  .hero.loaded .hero-bg { transform: scale(1); }
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(29,52,60,0.3) 0%, rgba(29,52,60,0.1) 40%, rgba(29,52,60,0.85) 100%);
+  }
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    color: var(--cream);
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 3rem;
+  }
+  .hero-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 1s 0.3s forwards;
+  }
+  .hero-label::before {
+    content: '';
+    display: inline-block;
+    width: 30px;
+    height: 1px;
+    background: var(--cream);
+    vertical-align: middle;
+    margin-right: 1rem;
+  }
+  .hero h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 200;
+    font-size: clamp(3rem, 8vw, 7rem);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 1.2s 0.5s forwards;
+  }
+  .hero h1 em {
+    font-style: italic;
+    font-weight: 300;
+    color: rgba(245, 240, 230, 0.85);
+  }
+  .hero-sub {
+    font-size: 1.1rem;
+    max-width: 460px;
+    line-height: 1.6;
+    opacity: 0;
+    animation: fadeUp 1s 0.8s forwards;
+  }
+  .hero-meta {
+    font-size: 0.8rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeUp 1s 1s forwards;
+    text-align: right;
+    line-height: 2;
+  }
+  .hero-meta-label { opacity: 0.6; font-size: 0.7rem; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .scroll-indicator {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--cream);
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeUp 1s 1.3s forwards, bounce 2s 2s infinite;
+    z-index: 2;
+  }
+  .scroll-indicator::after {
+    content: '';
+    display: block;
+    width: 1px;
+    height: 40px;
+    background: var(--cream);
+    margin: 0.8rem auto 0;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(8px); }
+  }
+
+  /* ============ COMMON SECTION ============ */
+  section {
+    padding: 7rem 2.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+  }
+  .eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 1px;
+    background: var(--terracotta);
+    vertical-align: middle;
+    margin-right: 0.8rem;
+  }
+  h2.section-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: clamp(2.4rem, 5vw, 4rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 2rem;
+    max-width: 900px;
+  }
+  h2.section-title em { font-style: italic; color: var(--aegean); }
+
+  .reveal { opacity: 0; transform: translateY(40px); transition: all 1s cubic-bezier(0.2, 0.6, 0.3, 1); }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ============ STORY ============ */
+  .story {
+    display: grid;
+    grid-template-columns: 5fr 4fr;
+    gap: 5rem;
+    align-items: start;
+  }
+  .story-text p {
+    font-size: 1.1rem;
+    line-height: 1.85;
+    color: var(--ink);
+    margin-bottom: 1.5rem;
+    max-width: 540px;
+  }
+  .story-text .lead {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-style: italic;
+    font-size: 1.55rem;
+    line-height: 1.4;
+    color: var(--aegean);
+    margin-bottom: 2rem;
+  }
+  .story-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--line);
+    margin-top: 3rem;
+  }
+  .stat-num {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: 3.2rem;
+    color: var(--aegean);
+    line-height: 1;
+    margin-bottom: 0.4rem;
+  }
+  .stat-label {
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .today-card {
+    background: var(--cream);
+    padding: 2rem;
+    border: 1px solid var(--line);
+    position: sticky;
+    top: 6rem;
+  }
+  .today-card-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+  }
+  .today-temp {
+    font-family: 'Fraunces', serif;
+    font-weight: 200;
+    font-size: 4rem;
+    color: var(--ink);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+  .today-desc {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    color: var(--muted);
+    margin-bottom: 2rem;
+  }
+  .today-detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.7rem 0;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+  }
+  .today-detail-row span:last-child { color: var(--muted); }
+
+  /* ============ ACTIVITIES ============ */
+  .activities {
+    background: var(--aegean-deep);
+    color: var(--cream);
+    max-width: none;
+    padding: 8rem 2.5rem;
+  }
+  .activities-inner { max-width: 1400px; margin: 0 auto; }
+  .activities .eyebrow { color: rgba(245, 240, 230, 0.6); }
+  .activities .eyebrow::before { background: rgba(245, 240, 230, 0.6); }
+  .activities h2.section-title { color: var(--cream); }
+  .activities h2.section-title em { color: rgba(245, 240, 230, 0.65); }
+
+  .activity-intro {
+    max-width: 600px;
+    margin-bottom: 5rem;
+    color: rgba(245, 240, 230, 0.75);
+    font-size: 1.05rem;
+    line-height: 1.75;
+  }
+  .activity-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border-top: 1px solid rgba(245, 240, 230, 0.18);
+  }
+  .activity-card {
+    padding: 2.5rem 1.8rem;
+    border-right: 1px solid rgba(245, 240, 230, 0.18);
+    transition: background 0.3s;
+    cursor: default;
+    position: relative;
+  }
+  .activity-card:last-child { border-right: none; }
+  .activity-card:hover { background: rgba(245, 240, 230, 0.04); }
+  .activity-num {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: 0.9rem;
+    color: var(--terracotta);
+    margin-bottom: 3rem;
+    letter-spacing: 0.05em;
+  }
+  .activity-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: 1.7rem;
+    color: var(--cream);
+    margin-bottom: 1rem;
+    line-height: 1.1;
+  }
+  .activity-desc {
+    font-size: 0.9rem;
+    color: rgba(245, 240, 230, 0.65);
+    line-height: 1.6;
+  }
+  .activity-icon {
+    width: 36px;
+    height: 36px;
+    margin-bottom: 1.5rem;
+    stroke: var(--cream);
+    fill: none;
+    stroke-width: 1;
+  }
+
+  /* ============ ROOMS ============ */
+  .rooms-header {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 4rem;
+    align-items: end;
+    margin-bottom: 4rem;
+  }
+  .rooms-header p {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--muted);
+    max-width: 440px;
+  }
+  .room-images {
+    display: grid;
+    grid-template-columns: 5fr 4fr;
+    gap: 1.5rem;
+    margin-bottom: 4rem;
+  }
+  .room-img {
+    aspect-ratio: 4 / 3;
+    background-size: cover;
+    background-position: center;
+    background-color: var(--aegean);
+    overflow: hidden;
+    position: relative;
+  }
+  .room-img.tall { aspect-ratio: 3 / 4; align-self: end; }
+  .room-img.one {
+    background-image: url('https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=1600&q=85&auto=format&fit=crop');
+  }
+  .room-img.two {
+    background-image: url('https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=1200&q=85&auto=format&fit=crop');
+  }
+
+  .amenities-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    padding: 0;
+  }
+  .amenity {
+    padding: 1.8rem 1.5rem;
+    border-right: 1px solid var(--line);
+    font-size: 0.9rem;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .amenity:nth-child(4n) { border-right: none; }
+  .amenity-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--terracotta);
+    flex-shrink: 0;
+  }
+
+  /* ============ LOCATION ============ */
+  .location {
+    background: var(--cream);
+    max-width: none;
+    padding: 8rem 2.5rem;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .location-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+  }
+  .location-text p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--ink);
+    margin-bottom: 2rem;
+    max-width: 460px;
+  }
+  .distance-list { list-style: none; }
+  .distance-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: baseline;
+    padding: 1.2rem 0;
+    border-bottom: 1px dashed var(--line);
+    gap: 1.5rem;
+  }
+  .distance-item:last-child { border-bottom: none; }
+  .distance-name {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: 1.3rem;
+    color: var(--ink);
+  }
+  .distance-dots {
+    border-bottom: 1px dotted var(--line);
+    position: relative;
+    top: -4px;
+  }
+  .distance-value {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    color: var(--aegean);
+    font-size: 1.05rem;
+  }
+
+  .map-frame {
+    aspect-ratio: 4 / 5;
+    background: var(--aegean);
+    background-image: url('https://images.unsplash.com/photo-1518791841217-8f162f1e1131?w=1200&q=85&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .map-frame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(29,52,60,0.15) 0%, rgba(29,52,60,0.6) 100%);
+  }
+  .map-pin {
+    position: absolute;
+    bottom: 2rem;
+    left: 2rem;
+    right: 2rem;
+    color: var(--cream);
+    z-index: 2;
+  }
+  .map-pin-coord {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 1.6rem;
+    margin-bottom: 0.3rem;
+  }
+  .map-pin-addr {
+    font-size: 0.85rem;
+    opacity: 0.85;
+    letter-spacing: 0.05em;
+  }
+
+  /* ============ REVIEWS ============ */
+  .reviews {
+    padding: 8rem 2.5rem;
+    text-align: center;
+  }
+  .reviews-inner { max-width: 900px; margin: 0 auto; }
+  .quote-mark {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 6rem;
+    color: var(--terracotta);
+    line-height: 0.5;
+    margin-bottom: 1.5rem;
+  }
+  .review-text {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-style: italic;
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    line-height: 1.4;
+    color: var(--ink);
+    margin-bottom: 2.5rem;
+    letter-spacing: -0.01em;
+  }
+  .review-attr {
+    font-size: 0.78rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .review-attr::before {
+    content: '';
+    display: block;
+    width: 30px;
+    height: 1px;
+    background: var(--muted);
+    margin: 0 auto 1.5rem;
+  }
+  .review-rating {
+    margin-top: 2rem;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    color: var(--aegean);
+  }
+
+  /* ============ RESERVATION ============ */
+  .reservation {
+    background: var(--ink);
+    color: var(--cream);
+    max-width: none;
+    padding: 8rem 2.5rem;
+  }
+  .reservation-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 5fr 6fr;
+    gap: 5rem;
+    align-items: start;
+  }
+  .reservation .eyebrow { color: var(--terracotta); }
+  .reservation h2.section-title { color: var(--cream); }
+  .reservation h2.section-title em { color: rgba(245, 240, 230, 0.55); }
+  .reservation p { color: rgba(245, 240, 230, 0.7); font-size: 1.05rem; line-height: 1.8; max-width: 380px; }
+
+  .res-contact {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(245, 240, 230, 0.2);
+  }
+  .res-contact-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(245, 240, 230, 0.5);
+    margin-bottom: 0.8rem;
+  }
+  .res-contact-val {
+    font-family: 'Fraunces', serif;
+    font-size: 1.15rem;
+    color: var(--cream);
+    margin-bottom: 1.5rem;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  .form-field { display: flex; flex-direction: column; }
+  .form-field.full { grid-column: 1 / -1; }
+  .form-field label {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(245, 240, 230, 0.55);
+    margin-bottom: 0.6rem;
+  }
+  .form-field input,
+  .form-field textarea {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(245, 240, 230, 0.3);
+    padding: 0.6rem 0;
+    color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-field input:focus,
+  .form-field textarea:focus { border-color: var(--terracotta); }
+  .form-field textarea { resize: vertical; min-height: 80px; }
+  .form-submit {
+    grid-column: 1 / -1;
+    background: var(--terracotta);
+    color: var(--cream);
+    border: none;
+    padding: 1.2rem 2rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 1.5rem;
+    transition: background 0.2s;
+  }
+  .form-submit:hover { background: #a14e32; }
+
+  /* ============ FOOTER ============ */
+  footer {
+    background: var(--bone);
+    padding: 4rem 2.5rem 2rem;
+    border-top: 1px solid var(--line);
+  }
+  .footer-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 3rem;
+    margin-bottom: 3rem;
+  }
+  .footer-brand {
+    font-family: 'Fraunces', serif;
+    font-size: 1.8rem;
+    font-weight: 300;
+    margin-bottom: 1rem;
+  }
+  .footer-brand em { font-style: italic; color: var(--aegean); }
+  .footer-tag {
+    font-style: italic;
+    font-family: 'Fraunces', serif;
+    color: var(--muted);
+    max-width: 280px;
+  }
+  .footer-col h4 {
+    font-size: 0.72rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.2rem;
+    font-weight: 500;
+  }
+  .footer-col a, .footer-col p {
+    display: block;
+    color: var(--ink);
+    text-decoration: none;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+  .footer-col a:hover { color: var(--aegean); }
+  .footer-bottom {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding-top: 2rem;
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 900px) {
+    .nav { padding: 1rem 1.2rem; }
+    .nav-links { display: none; }
+    .nav-right { gap: 0.8rem; }
+    .nav-logo { font-size: 1.1rem; }
+    .reserve-btn { padding: 0.55rem 0.9rem; font-size: 0.7rem; }
+    .lang-toggle { padding: 0.4rem 0.7rem; font-size: 0.7rem; }
+
+    .hero { padding: 4rem 1.2rem 3rem; min-height: 600px; }
+    .hero-content { grid-template-columns: 1fr; gap: 2rem; align-items: start; }
+    .hero h1 { font-size: clamp(2.5rem, 12vw, 4rem); }
+    .hero-meta { text-align: left; }
+
+    section { padding: 5rem 1.2rem; }
+    .story { grid-template-columns: 1fr; gap: 3rem; }
+    .story-stats { grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .today-card { position: static; }
+
+    .activities { padding: 5rem 1.2rem; }
+    .activity-grid { grid-template-columns: 1fr 1fr; }
+    .activity-card { border-bottom: 1px solid rgba(245,240,230,0.18); }
+    .activity-card:nth-child(2) { border-right: none; }
+
+    .rooms-header { grid-template-columns: 1fr; gap: 1.5rem; }
+    .room-images { grid-template-columns: 1fr; }
+    .room-img.tall { aspect-ratio: 4 / 3; }
+    .amenities-grid { grid-template-columns: 1fr 1fr; }
+    .amenity:nth-child(2n) { border-right: none; }
+
+    .location { padding: 5rem 1.2rem; }
+    .location-inner { grid-template-columns: 1fr; gap: 3rem; }
+    .map-frame { aspect-ratio: 4 / 3; }
+
+    .reviews { padding: 5rem 1.2rem; }
+    .review-text { font-size: 1.3rem; }
+
+    .reservation { padding: 5rem 1.2rem; }
+    .reservation-inner { grid-template-columns: 1fr; gap: 3rem; }
+    .form-grid { grid-template-columns: 1fr; gap: 1.2rem; }
+
+    .footer-inner { grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .footer-bottom { flex-direction: column; gap: 0.8rem; text-align: center; }
+  }
+
+  @media (max-width: 500px) {
+    .activity-grid { grid-template-columns: 1fr; }
+    .activity-card { border-right: none; }
+    .amenities-grid { grid-template-columns: 1fr; }
+    .amenity { border-right: none; }
+  }
+</style>
+</head>
+
+<body class="lang-tr">
+
+<!-- =========== NAVIGATION =========== -->
+<nav class="nav" id="nav">
+  <a href="#" class="nav-logo">Paradise <em>Imroz</em></a>
+  <div class="nav-right">
+    <div class="nav-links">
+      <a href="#story"><span class="lang-tr">Hikaye</span><span class="lang-en">Story</span></a>
+      <a href="#activities"><span class="lang-tr">Aktiviteler</span><span class="lang-en">Activities</span></a>
+      <a href="#rooms"><span class="lang-tr">Odalar</span><span class="lang-en">Rooms</span></a>
+      <a href="#location"><span class="lang-tr">Konum</span><span class="lang-en">Location</span></a>
+    </div>
+    <button class="lang-toggle" onclick="toggleLang()" id="langBtn">EN</button>
+    <a href="#reservation" class="reserve-btn">
+      <span class="lang-tr">Rezervasyon</span><span class="lang-en">Reserve</span>
+    </a>
+  </div>
+</nav>
+
+<!-- =========== HERO =========== -->
+<section class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div>
+      <div class="hero-label">
+        <span class="lang-tr">Gökçeada · 8 odalı butik otel</span>
+        <span class="lang-en">Gökçeada · 8-room boutique hotel</span>
+      </div>
+      <h1>
+        <span class="lang-tr">Sessizliğin<br><em>kendi adası</em>.</span>
+        <span class="lang-en">An island that <em>keeps quiet</em>.</span>
+      </h1>
+      <p class="hero-sub">
+        <span class="lang-tr">Imroz'un ortasında, denizin her tarafından duyulduğu bir bahçede, sekiz oda. Aceleye, gürültüye, kalabalığa yer yok.</span>
+        <span class="lang-en">Eight rooms in a garden in the middle of Imbros, where the sea can be heard from every side. No place for hurry, noise, or crowds.</span>
+      </p>
+    </div>
+    <div class="hero-meta">
+      <div class="hero-meta-label"><span class="lang-tr">40° 11′ K · 25° 53′ D</span><span class="lang-en">40° 11′ N · 25° 53′ E</span></div>
+      <div><span class="lang-tr">Mayıs · Ekim arası</span><span class="lang-en">May · October season</span></div>
+      <div><span class="lang-tr">Yeni misafirler için</span><span class="lang-en">For new arrivals</span></div>
+    </div>
+  </div>
+  <div class="scroll-indicator">
+    <span class="lang-tr">Aşağıya</span><span class="lang-en">Scroll</span>
+  </div>
+</section>
+
+<!-- =========== STORY =========== -->
+<section id="story">
+  <div class="story">
+    <div class="story-text reveal">
+      <div class="eyebrow"><span class="lang-tr">Hikaye</span><span class="lang-en">The story</span></div>
+      <h2 class="section-title">
+        <span class="lang-tr">Imroz'dan <em>Gökçeada'ya</em>, isim değişti ada kalır.</span>
+        <span class="lang-en">From Imbros to <em>Gökçeada</em>, the name changed, the island stayed.</span>
+      </h2>
+      <p class="lead">
+        <span class="lang-tr">"Adanın merkezindeyiz ama merkezde değiliz. Bu çelişki bizim en güzel tarafımız."</span>
+        <span class="lang-en">"We're in the center of the island, but not in any center. That contradiction is our best side."</span>
+      </p>
+      <p>
+        <span class="lang-tr">Paradise Imroz, Gökçeada'nın merkezinde, yürüme mesafesinde her şeye yakın bir köşede. Sekiz oda, bir bahçe, sade bir kahvaltı. Komplikasyonsuz bir tatil için yeterli, biraz da fazla.</span>
+        <span class="lang-en">Paradise Imroz sits in the heart of Gökçeada, in a corner walking distance to everything. Eight rooms, a garden, a simple breakfast. Enough for a holiday without complications. Almost too much.</span>
+      </p>
+      <p>
+        <span class="lang-tr">Ada eski adıyla Imbros'tu. Bir dönem İmroz oldu. Sonra Gökçeada. İsimler değişti, ada hiç değişmedi. Sessiz kaldı, yeşil kaldı, denizin dibi hala görünüyor.</span>
+        <span class="lang-en">The island was once Imbros. Then İmroz. Now Gökçeada. The names changed, the island didn't. Still quiet, still green, with a sea so clear you can see the bottom.</span>
+      </p>
+      <div class="story-stats">
+        <div>
+          <div class="stat-num">8</div>
+          <div class="stat-label"><span class="lang-tr">Oda</span><span class="lang-en">Rooms</span></div>
+        </div>
+        <div>
+          <div class="stat-num">5<span style="font-size: 1.5rem; vertical-align: super;">′</span></div>
+          <div class="stat-label"><span class="lang-tr">Merkeze yürüyüş</span><span class="lang-en">To town center</span></div>
+        </div>
+        <div>
+          <div class="stat-num">4<span style="font-size: 1.5rem;">km</span></div>
+          <div class="stat-label"><span class="lang-tr">Plaja mesafe</span><span class="lang-en">To the beach</span></div>
+        </div>
+        <div>
+          <div class="stat-num">∞</div>
+          <div class="stat-label"><span class="lang-tr">Bahçeden çıkamama riski</span><span class="lang-en">Risk of never leaving the garden</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="today-card reveal">
+      <div class="today-card-label"><span class="lang-tr">Bugün Gökçeada'da</span><span class="lang-en">Today in Gökçeada</span></div>
+      <div class="today-temp">22°</div>
+      <div class="today-desc"><span class="lang-tr">açık, hafif kuzey rüzgarı</span><span class="lang-en">clear, light northerly breeze</span></div>
+      <div class="today-detail-row">
+        <span><span class="lang-tr">Deniz</span><span class="lang-en">Sea</span></span>
+        <span>21°</span>
+      </div>
+      <div class="today-detail-row">
+        <span><span class="lang-tr">Rüzgar</span><span class="lang-en">Wind</span></span>
+        <span>12 km/h</span>
+      </div>
+      <div class="today-detail-row">
+        <span><span class="lang-tr">Gün batımı</span><span class="lang-en">Sunset</span></span>
+        <span>20:34</span>
+      </div>
+      <div class="today-detail-row">
+        <span><span class="lang-tr">Sörf koşulları</span><span class="lang-en">Surf conditions</span></span>
+        <span style="color: var(--terracotta);"><span class="lang-tr">İyi</span><span class="lang-en">Good</span></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========== ACTIVITIES =========== -->
+<section class="activities" id="activities">
+  <div class="activities-inner">
+    <div class="eyebrow reveal"><span class="lang-tr">Bahçeden çıkarsanız</span><span class="lang-en">If you leave the garden</span></div>
+    <h2 class="section-title reveal">
+      <span class="lang-tr">Adanın <em>başka şeyleri</em> de var.</span>
+      <span class="lang-en">The island has <em>other things</em> too.</span>
+    </h2>
+    <p class="activity-intro reveal">
+      <span class="lang-tr">Sualtı Milli Parkı, kuzey rüzgarı, taş yollar, balıkçı tekneleri. Otele birkaç dakikadan uzak hiçbir şey yok ve hiçbirini hızlı yapmaya çalışmıyoruz.</span>
+      <span class="lang-en">An underwater national park, a northerly wind, stone roads, fishing boats. Nothing is more than a few minutes from the hotel, and we're not trying to rush any of it.</span>
+    </p>
+
+    <div class="activity-grid reveal">
+      <div class="activity-card">
+        <svg class="activity-icon" viewBox="0 0 40 40">
+          <path d="M5 20 Q 12 15, 20 20 T 35 20" stroke-linecap="round"/>
+          <path d="M5 26 Q 12 21, 20 26 T 35 26" stroke-linecap="round"/>
+          <circle cx="20" cy="12" r="3"/>
+        </svg>
+        <div class="activity-num">01</div>
+        <div class="activity-title"><span class="lang-tr">Dalış</span><span class="lang-en">Diving</span></div>
+        <div class="activity-desc">
+          <span class="lang-tr">Sualtı Milli Parkı'nda mavinin tonlarını saymak için saatler yetmez. Yerel kulüplerle anlaşmamız var.</span>
+          <span class="lang-en">Hours aren't enough to count the shades of blue at the underwater park. We work with local dive clubs.</span>
+        </div>
+      </div>
+      <div class="activity-card">
+        <svg class="activity-icon" viewBox="0 0 40 40">
+          <path d="M5 28 Q 15 18, 25 22 T 35 18" stroke-linecap="round"/>
+          <path d="M27 8 L 27 22" stroke-linecap="round"/>
+          <path d="M27 8 L 33 14 L 27 14" fill="currentColor" stroke="none"/>
+        </svg>
+        <div class="activity-num">02</div>
+        <div class="activity-title"><span class="lang-tr">Sörf</span><span class="lang-en">Surfing</span></div>
+        <div class="activity-desc">
+          <span class="lang-tr">Gökçeada'nın kuzey rüzgarı Avrupa rüzgar sörfü haritasında işaretli. Mayıs–ekim arası neredeyse hep esiyor.</span>
+          <span class="lang-en">The island's northern wind is marked on Europe's surf map. It blows almost constantly from May to October.</span>
+        </div>
+      </div>
+      <div class="activity-card">
+        <svg class="activity-icon" viewBox="0 0 40 40">
+          <circle cx="10" cy="28" r="6"/>
+          <circle cx="30" cy="28" r="6"/>
+          <path d="M10 28 L 20 14 L 30 28" stroke-linecap="round"/>
+          <path d="M20 14 L 24 10" stroke-linecap="round"/>
+        </svg>
+        <div class="activity-num">03</div>
+        <div class="activity-title"><span class="lang-tr">Bisiklet</span><span class="lang-en">Cycling</span></div>
+        <div class="activity-desc">
+          <span class="lang-tr">Resepsiyondan kirala. Zeytinli, Tepeköy, Kaleköy — Rum köyleri kendiliğinden bulunur.</span>
+          <span class="lang-en">Rent at reception. Zeytinli, Tepeköy, Kaleköy — the old Greek villages find themselves.</span>
+        </div>
+      </div>
+      <div class="activity-card">
+        <svg class="activity-icon" viewBox="0 0 40 40">
+          <path d="M5 20 C 10 12, 25 12, 32 18 C 30 22, 28 25, 32 25" stroke-linecap="round"/>
+          <circle cx="28" cy="18" r="1.5" fill="currentColor"/>
+          <path d="M32 18 L 38 14" stroke-linecap="round"/>
+        </svg>
+        <div class="activity-num">04</div>
+        <div class="activity-title"><span class="lang-tr">Balıkçılık</span><span class="lang-en">Fishing</span></div>
+        <div class="activity-desc">
+          <span class="lang-tr">Yerel tekneler güneş doğmadan kalkıyor. İsterseniz biz ayarlarız, akşamı balıkla kapatırız.</span>
+          <span class="lang-en">Local boats leave before sunrise. We can arrange it. Dinner closes with whatever was caught.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========== ROOMS =========== -->
+<section id="rooms">
+  <div class="rooms-header reveal">
+    <div>
+      <div class="eyebrow"><span class="lang-tr">Odalar</span><span class="lang-en">The rooms</span></div>
+      <h2 class="section-title">
+        <span class="lang-tr">Sekiz oda, <em>sekiz farklı sessizlik</em>.</span>
+        <span class="lang-en">Eight rooms, <em>eight kinds of quiet</em>.</span>
+      </h2>
+    </div>
+    <p>
+      <span class="lang-tr">Hiçbiri büyük değil, hiçbiri lüks değil. Her birinde balkon, klima, kendi banyosu ve bir yerlerden gelen ağustos böceği sesi.</span>
+      <span class="lang-en">None of them are big, none are luxurious. Each has a balcony, A/C, a private bath, and the sound of cicadas from somewhere.</span>
+    </p>
+  </div>
+
+  <div class="room-images reveal">
+    <div class="room-img one"></div>
+    <div class="room-img two tall"></div>
+  </div>
+
+  <div class="amenities-grid reveal">
+    <div class="amenity"><span class="amenity-dot"></span><span class="lang-tr">Klima</span><span class="lang-en">Air conditioning</span></div>
+    <div class="amenity"><span class="amenity-dot"></span><span class="lang-tr">Balkon</span><span class="lang-en">Balcony</span></div>
+    <div class="amenity"><span class="amenity-dot"></span><span class="lang-tr">Özel banyo</span><span class="lang-en">Private bath</span></div>
+    <div class="amenity"><span class="amenity-dot"></span><span class="lang-tr">Mini buzdolabı</span><span class="lang-en">Mini fridge</span></div>
+    <div class="amenity"><span class="amenity-dot"></span><span class="lang-tr">Ücretsiz Wi-Fi</span><span class="lang-en">Free Wi-Fi</span></div>
+    <div class="amenity"><span class="amenity-dot"></span><span class="lang-tr">Bahçe / şehir manzarası</span><span class="lang-en">Garden or city view</span></div>
+    <div class="amenity"><span class="amenity-dot"></span><span class="lang-tr">Bisiklet kiralama</span><span class="lang-en">Bicycle rental</span></div>
+    <div class="amenity"><span class="amenity-dot"></span><span class="lang-tr">Aile odaları</span><span class="lang-en">Family rooms</span></div>
+    <div class="amenity"><span class="amenity-dot"></span><span class="lang-tr">Hızlı giriş/çıkış</span><span class="lang-en">Express check-in</span></div>
+    <div class="amenity"><span class="amenity-dot"></span><span class="lang-tr">Ücretsiz otopark</span><span class="lang-en">Free parking</span></div>
+    <div class="amenity"><span class="amenity-dot"></span><span class="lang-tr">Tavla (ücretsiz)</span><span class="lang-en">Backgammon (free)</span></div>
+    <div class="amenity"><span class="amenity-dot"></span><span class="lang-tr">Doğal kahvaltı</span><span class="lang-en">Local breakfast</span></div>
+  </div>
+</section>
+
+<!-- =========== LOCATION =========== -->
+<section class="location" id="location">
+  <div class="location-inner">
+    <div class="location-text reveal">
+      <div class="eyebrow"><span class="lang-tr">Konum</span><span class="lang-en">Where we are</span></div>
+      <h2 class="section-title">
+        <span class="lang-tr">Tam <em>ortada</em>. Her şeye yakın, hiçbir şeyin tam içinde değil.</span>
+        <span class="lang-en">Right in the <em>middle</em>. Close to everything, in the middle of nothing.</span>
+      </h2>
+      <p>
+        <span class="lang-tr">Gökçeada Town merkezinde, Fatih Mahallesi'nde. Yürüyerek beş dakikada çarşıda, on dakikada Kalekoy'a yola çıkarsınız. Plaja dört kilometre — sabah bisikletle, akşam taksi ile.</span>
+        <span class="lang-en">In the center of Gökçeada Town, Fatih neighborhood. Five minutes walking to the bazaar, ten by car to Kalekoy. Four kilometers to the beach — bike in the morning, taxi at night.</span>
+      </p>
+
+      <ul class="distance-list">
+        <li class="distance-item">
+          <span class="distance-name"><span class="lang-tr">Şehir merkezi</span><span class="lang-en">Town center</span></span>
+          <span class="distance-dots"></span>
+          <span class="distance-value"><span class="lang-tr">5 dk yürüyüş</span><span class="lang-en">5 min walk</span></span>
+        </li>
+        <li class="distance-item">
+          <span class="distance-name"><span class="lang-tr">Kalekoy Limanı</span><span class="lang-en">Kalekoy Harbour</span></span>
+          <span class="distance-dots"></span>
+          <span class="distance-value"><span class="lang-tr">10 dk araç</span><span class="lang-en">10 min drive</span></span>
+        </li>
+        <li class="distance-item">
+          <span class="distance-name"><span class="lang-tr">Plaj</span><span class="lang-en">Beach</span></span>
+          <span class="distance-dots"></span>
+          <span class="distance-value">4 km</span>
+        </li>
+        <li class="distance-item">
+          <span class="distance-name"><span class="lang-tr">Kent Müzesi</span><span class="lang-en">Town Museum</span></span>
+          <span class="distance-dots"></span>
+          <span class="distance-value"><span class="lang-tr">15 dk yürüyüş</span><span class="lang-en">15 min walk</span></span>
+        </li>
+        <li class="distance-item">
+          <span class="distance-name"><span class="lang-tr">Çanakkale Havalimanı</span><span class="lang-en">Çanakkale Airport</span></span>
+          <span class="distance-dots"></span>
+          <span class="distance-value">46 km</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="map-frame reveal">
+      <div class="map-pin">
+        <div class="map-pin-coord">40.193° N, 25.886° E</div>
+        <div class="map-pin-addr">FATIH MAH. · YAŞAR DOĞU SK. NO:7 · GÖKÇEADA</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========== REVIEW =========== -->
+<section class="reviews">
+  <div class="reviews-inner reveal">
+    <div class="quote-mark">"</div>
+    <div class="review-text">
+      <span class="lang-tr">Otel çok yeni ve temiz, ilgi alaka mükemmellenecek kadar iyi. Çok merkezi bir konumda arkadaş grubu olarak konaklamamızı sağladık. Her şey çok güzeldi.</span>
+      <span class="lang-en">The hotel is new and clean, with care so good you can't even fault it. Right in the center, we stayed as a group of friends. Everything was beautiful.</span>
+    </div>
+    <div class="review-attr">
+      <span class="lang-tr">Otelz · Doğrulanmış konuk</span>
+      <span class="lang-en">Otelz · Verified guest</span>
+    </div>
+    <div class="review-rating">9.4 / 10</div>
+  </div>
+</section>
+
+<!-- =========== RESERVATION =========== -->
+<section class="reservation" id="reservation">
+  <div class="reservation-inner">
+    <div class="reveal">
+      <div class="eyebrow"><span class="lang-tr">Rezervasyon</span><span class="lang-en">Reserve</span></div>
+      <h2 class="section-title">
+        <span class="lang-tr">Komisyonsuz, <em>direkt bizden</em>.</span>
+        <span class="lang-en">No commission, <em>direct with us</em>.</span>
+      </h2>
+      <p>
+        <span class="lang-tr">Formu doldurun, 24 saat içinde size müsaitlik ve fiyat ile dönelim. Booking ve Otelz fiyatlarına göre direkt bizden ortalama %15 avantaj.</span>
+        <span class="lang-en">Fill the form. We'll come back within 24 hours with availability and price. Direct booking is on average 15% better than Booking or Otelz.</span>
+      </p>
+
+      <div class="res-contact">
+        <div class="res-contact-label"><span class="lang-tr">Telefon</span><span class="lang-en">Phone</span></div>
+        <div class="res-contact-val">+90 5XX XXX XX XX</div>
+        <div class="res-contact-label">E-mail</div>
+        <div class="res-contact-val">info@paradiseimroz.com</div>
+        <div class="res-contact-label"><span class="lang-tr">Adres</span><span class="lang-en">Address</span></div>
+        <div class="res-contact-val">Fatih Mh. Yaşar Doğu Sk. No:7<br>Gökçeada · Çanakkale</div>
+      </div>
+    </div>
+
+    <form class="form-grid reveal" onsubmit="event.preventDefault(); alert(document.body.classList.contains('lang-tr') ? 'Form gönderildi — bu bir demo. Gerçek sitede otelci e-posta alacak.' : 'Form submitted — this is a demo. On the real site, the hotel would receive an email.');">
+      <div class="form-field full">
+        <label><span class="lang-tr">Ad Soyad</span><span class="lang-en">Full name</span></label>
+        <input type="text" required>
+      </div>
+      <div class="form-field">
+        <label>E-mail</label>
+        <input type="email" required>
+      </div>
+      <div class="form-field">
+        <label><span class="lang-tr">Telefon</span><span class="lang-en">Phone</span></label>
+        <input type="tel">
+      </div>
+      <div class="form-field">
+        <label><span class="lang-tr">Giriş</span><span class="lang-en">Check-in</span></label>
+        <input type="date">
+      </div>
+      <div class="form-field">
+        <label><span class="lang-tr">Çıkış</span><span class="lang-en">Check-out</span></label>
+        <input type="date">
+      </div>
+      <div class="form-field full">
+        <label><span class="lang-tr">Notunuz (kaç kişi, özel istek vs.)</span><span class="lang-en">Note (number of guests, special requests)</span></label>
+        <textarea rows="3"></textarea>
+      </div>
+      <button type="submit" class="form-submit">
+        <span class="lang-tr">Rezervasyon talebi gönder</span><span class="lang-en">Send reservation request</span>
+      </button>
+    </form>
+  </div>
+</section>
+
+<!-- =========== FOOTER =========== -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">Paradise <em>Imroz</em></div>
+      <p class="footer-tag">
+        <span class="lang-tr">Gökçeada'nın kalbinde, sekiz odalı bir mola.</span>
+        <span class="lang-en">A boutique pause of eight rooms, in the heart of Gökçeada.</span>
+      </p>
+    </div>
+    <div class="footer-col">
+      <h4><span class="lang-tr">Otel</span><span class="lang-en">Hotel</span></h4>
+      <a href="#story"><span class="lang-tr">Hikaye</span><span class="lang-en">Story</span></a>
+      <a href="#rooms"><span class="lang-tr">Odalar</span><span class="lang-en">Rooms</span></a>
+      <a href="#activities"><span class="lang-tr">Aktiviteler</span><span class="lang-en">Activities</span></a>
+    </div>
+    <div class="footer-col">
+      <h4><span class="lang-tr">İletişim</span><span class="lang-en">Contact</span></h4>
+      <p>Fatih Mh. Yaşar Doğu Sk. No:7</p>
+      <p>Gökçeada · Çanakkale</p>
+      <a href="mailto:info@paradiseimroz.com">info@paradiseimroz.com</a>
+    </div>
+    <div class="footer-col">
+      <h4><span class="lang-tr">Takip et</span><span class="lang-en">Follow</span></h4>
+      <a href="#">Instagram</a>
+      <a href="#">Facebook</a>
+      <a href="#">TripAdvisor</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Paradise Imroz · <span class="lang-tr">Tüm hakları saklıdır</span><span class="lang-en">All rights reserved</span></span>
+    <span><span class="lang-tr">Yapım</span><span class="lang-en">Built with care</span> · <em>Gökçeada</em></span>
+  </div>
+</footer>
+
+<script>
+  // Language toggle
+  function toggleLang() {
+    const body = document.body;
+    const btn = document.getElementById('langBtn');
+    if (body.classList.contains('lang-tr')) {
+      body.classList.remove('lang-tr');
+      body.classList.add('lang-en');
+      body.lang = 'en';
+      btn.textContent = 'TR';
+    } else {
+      body.classList.remove('lang-en');
+      body.classList.add('lang-tr');
+      body.lang = 'tr';
+      btn.textContent = 'EN';
+    }
+  }
+
+  // Nav scroll state
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 80) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+  });
+
+  // Hero loaded
+  setTimeout(() => document.getElementById('hero').classList.add('loaded'), 100);
+
+  // Intersection Observer for reveals
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>

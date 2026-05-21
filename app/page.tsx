@@ -1,6 +1,6 @@
 import { Hero } from '@/components/sections/hero';
 import { Story } from '@/components/sections/story';
-import { ActivitiesStrip } from '@/components/sections/activities-strip';
+import { ReviewsStrip } from '@/components/sections/reviews-strip';
 import { RoomsTeaser } from '@/components/sections/rooms-teaser';
 import { LocationTeaser } from '@/components/sections/location-teaser';
 import { Review } from '@/components/sections/review';
@@ -12,7 +12,7 @@ export default function HomePage() {
     <main>
       <Hero />
       <Story />
-      <ActivitiesStrip />
+      <ReviewsStrip />
       <RoomsTeaser />
       <LocationTeaser />
       <Review />

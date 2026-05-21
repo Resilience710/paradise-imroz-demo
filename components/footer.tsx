@@ -26,8 +26,8 @@ export function Footer() {
           <Link href="/odalar" className="block text-ink no-underline mb-2 text-sm hover:text-aegean">
             {t('Odalar', 'Rooms')}
           </Link>
-          <Link href="/aktiviteler" className="block text-ink no-underline mb-2 text-sm hover:text-aegean">
-            {t('Aktiviteler', 'Activities')}
+          <Link href="/#yorumlar" className="block text-ink no-underline mb-2 text-sm hover:text-aegean">
+            {t('Yorumlar', 'Reviews')}
           </Link>
           <Link href="/galeri" className="block text-ink no-underline mb-2 text-sm hover:text-aegean">
             {t('Galeri', 'Gallery')}

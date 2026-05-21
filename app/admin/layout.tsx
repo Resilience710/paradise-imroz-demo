@@ -105,6 +105,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             <NavLink href="/admin" label={t('Genel bakış', 'Overview')} />
             <NavLink href="/admin/rezervasyonlar" label={t('Rezervasyonlar', 'Reservations')} />
             <NavLink href="/admin/odalar" label={t('Odalar', 'Rooms')} />
+            <NavLink href="/admin/yorumlar" label={t('Yorumlar', 'Reviews')} />
             <NavLink href="/admin/galeri" label={t('Galeri', 'Gallery')} />
           </nav>
           <div className="mt-12 px-4">

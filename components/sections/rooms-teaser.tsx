@@ -1,14 +1,32 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
+import { useEffect, useState } from 'react';
 import { Reveal } from '@/components/reveal';
 import { useLang } from '@/components/lang/lang-provider';
-import { rooms, amenityLabels, hotelAmenities } from '@/lib/data';
+import { rooms as staticRooms, type Room, amenityLabels, hotelAmenities } from '@/lib/data';
+import { fetchRoomSettings, mergeRoom, onRoomsChange } from '@/lib/rooms';
 
 export function RoomsTeaser() {
   const { t, lang } = useLang();
-  const featured = rooms.slice(0, 4);
+  const [merged, setMerged] = useState<Room[]>(staticRooms);
+
+  useEffect(() => {
+    let cancelled = false;
+    const refresh = async () => {
+      const o = await fetchRoomSettings();
+      if (cancelled) return;
+      setMerged(staticRooms.map((r) => mergeRoom(r, o.find((x) => x.slug === r.slug))));
+    };
+    refresh();
+    const off = onRoomsChange(refresh);
+    return () => {
+      cancelled = true;
+      off();
+    };
+  }, []);
+
+  const featured = merged.slice(0, 4);
 
   return (
     <section id="rooms" className="max-w-[1400px] mx-auto px-6 md:px-10 py-28">
@@ -38,12 +56,11 @@ export function RoomsTeaser() {
           {featured.map((room) => (
             <Link key={room.slug} href={`/odalar/${room.slug}`} className="block group">
               <div className="aspect-[4/5] bg-aegean overflow-hidden mb-4 relative">
-                <Image
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                   src={room.images[0]}
                   alt={t(room.name.tr, room.name.en)}
-                  fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
               </div>
               <div className="font-display text-xl mb-1">{t(room.name.tr, room.name.en)}</div>

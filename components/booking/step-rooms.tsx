@@ -1,9 +1,10 @@
 'use client';
 
-import Image from 'next/image';
+import { useEffect, useState } from 'react';
 import { useLang } from '@/components/lang/lang-provider';
-import { rooms, amenityLabels } from '@/lib/data';
-import { isRoomAvailable } from '@/lib/mock-bookings';
+import { rooms as staticRooms, type Room, amenityLabels } from '@/lib/data';
+import { fetchRoomSettings, mergeRoom } from '@/lib/rooms';
+import { checkAvailability } from '@/lib/blocks';
 import { formatPrice, nightsBetween } from '@/lib/booking';
 
 type Props = {
@@ -18,17 +19,37 @@ export function RoomStep({ checkIn, checkOut, selectedSlug, onSelect, onBack }: 
   const { t, lang } = useLang();
   const nights = nightsBetween(checkIn, checkOut);
 
-  const available = rooms.filter((r) => isRoomAvailable(r.slug, checkIn, checkOut));
-  const unavailable = rooms.filter((r) => !isRoomAvailable(r.slug, checkIn, checkOut));
+  const [allRooms, setAllRooms] = useState<Room[]>(staticRooms);
+  const [unavailable, setUnavailable] = useState<Set<string>>(new Set());
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const [overrides, taken] = await Promise.all([fetchRoomSettings(), checkAvailability(checkIn, checkOut)]);
+      if (cancelled) return;
+      setAllRooms(staticRooms.map((r) => mergeRoom(r, overrides.find((o) => o.slug === r.slug))));
+      setUnavailable(taken);
+      setLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [checkIn, checkOut]);
+
+  const available = allRooms.filter((r) => !unavailable.has(r.slug));
+  const occupied = allRooms.filter((r) => unavailable.has(r.slug));
 
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
         <p className="text-muted">
-          {t(
-            `${available.length} / ${rooms.length} oda müsait · ${nights} gece`,
-            `${available.length} of ${rooms.length} rooms available · ${nights} ${nights === 1 ? 'night' : 'nights'}`
-          )}
+          {loading
+            ? t('Müsaitlik kontrol ediliyor…', 'Checking availability…')
+            : t(
+                `${available.length} / ${allRooms.length} oda müsait · ${nights} gece`,
+                `${available.length} of ${allRooms.length} rooms available · ${nights} ${nights === 1 ? 'night' : 'nights'}`
+              )}
         </p>
         <button onClick={onBack} className="text-[0.78rem] tracking-[0.15em] uppercase text-aegean hover:text-terracotta">
           ← {t('Tarihleri değiştir', 'Change dates')}
@@ -45,7 +66,8 @@ export function RoomStep({ checkIn, checkOut, selectedSlug, onSelect, onBack }: 
             }`}
           >
             <div className="aspect-[16/9] relative bg-aegean overflow-hidden">
-              <Image src={room.images[0]} alt={t(room.name.tr, room.name.en)} fill className="object-cover" sizes="(min-width:768px) 50vw, 100vw" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={room.images[0]} alt={t(room.name.tr, room.name.en)} className="absolute inset-0 w-full h-full object-cover" />
             </div>
             <div className="p-5">
               <div className="flex items-baseline justify-between mb-2">
@@ -76,16 +98,17 @@ export function RoomStep({ checkIn, checkOut, selectedSlug, onSelect, onBack }: 
         ))}
       </div>
 
-      {unavailable.length > 0 && (
+      {occupied.length > 0 && (
         <div className="mt-12 pt-8 border-t border-line">
           <div className="text-[0.7rem] tracking-[0.3em] uppercase text-muted mb-4">
             {t('Bu tarihlerde dolu', 'Booked for these dates')}
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 opacity-50">
-            {unavailable.map((r) => (
+            {occupied.map((r) => (
               <div key={r.slug} className="bg-cream border border-line p-4">
                 <div className="aspect-[4/3] relative bg-aegean overflow-hidden mb-3">
-                  <Image src={r.images[0]} alt="" fill className="object-cover grayscale" sizes="200px" />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={r.images[0]} alt="" className="absolute inset-0 w-full h-full object-cover grayscale" />
                 </div>
                 <div className="font-display text-base">{t(r.name.tr, r.name.en)}</div>
                 <div className="text-xs text-muted">{t('Dolu', 'Booked')}</div>

@@ -1,15 +1,32 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
+import { useEffect, useState } from 'react';
 import { Reveal } from '@/components/reveal';
 import { PageHeader } from '@/components/page-header';
 import { useLang } from '@/components/lang/lang-provider';
-import { rooms, amenityLabels } from '@/lib/data';
+import { rooms as staticRooms, type Room, amenityLabels } from '@/lib/data';
+import { fetchRoomSettings, mergeRoom, onRoomsChange } from '@/lib/rooms';
 import { formatPrice } from '@/lib/booking';
 
 export default function RoomsPage() {
   const { t, lang } = useLang();
+  const [merged, setMerged] = useState<Room[]>(staticRooms);
+
+  useEffect(() => {
+    let cancelled = false;
+    const refresh = async () => {
+      const overrides = await fetchRoomSettings();
+      if (cancelled) return;
+      setMerged(staticRooms.map((r) => mergeRoom(r, overrides.find((o) => o.slug === r.slug))));
+    };
+    refresh();
+    const off = onRoomsChange(refresh);
+    return () => {
+      cancelled = true;
+      off();
+    };
+  }, []);
 
   return (
     <main className="pb-24">
@@ -26,16 +43,15 @@ export default function RoomsPage() {
       />
 
       <div className="max-w-[1400px] mx-auto px-6 md:px-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
-        {rooms.map((room) => (
+        {merged.map((room) => (
           <Reveal key={room.slug}>
             <Link href={`/odalar/${room.slug}`} className="block group">
               <div className="aspect-[4/5] bg-aegean overflow-hidden mb-5 relative">
-                <Image
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                   src={room.images[0]}
                   alt={t(room.name.tr, room.name.en)}
-                  fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
               </div>
               <div className="flex items-baseline justify-between mb-2">

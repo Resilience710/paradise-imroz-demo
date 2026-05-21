@@ -1,21 +1,41 @@
 'use client';
 
-import { use, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { rooms, amenityLabels } from '@/lib/data';
+import { rooms as staticRooms, type Room, amenityLabels } from '@/lib/data';
+import { fetchRoomSettings, mergeRoom, onRoomsChange } from '@/lib/rooms';
 import { useLang } from '@/components/lang/lang-provider';
 import { Reveal } from '@/components/reveal';
 import { formatPrice } from '@/lib/booking';
 
 export default function RoomDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
-  const room = rooms.find((r) => r.slug === slug);
+  const base = staticRooms.find((r) => r.slug === slug);
   const { t, lang } = useLang();
+  const [room, setRoom] = useState<Room | null>(base || null);
+  const [allRooms, setAllRooms] = useState<Room[]>(staticRooms);
   const [activeImg, setActiveImg] = useState(0);
 
-  if (!room) return notFound();
+  useEffect(() => {
+    let cancelled = false;
+    const refresh = async () => {
+      if (!base) return;
+      const overrides = await fetchRoomSettings();
+      if (cancelled) return;
+      setRoom(mergeRoom(base, overrides.find((o) => o.slug === slug)));
+      setAllRooms(staticRooms.map((r) => mergeRoom(r, overrides.find((o) => o.slug === r.slug))));
+    };
+    refresh();
+    const off = onRoomsChange(refresh);
+    return () => {
+      cancelled = true;
+      off();
+    };
+  }, [slug, base]);
+
+  if (!base) return notFound();
+  if (!room) return null;
 
   return (
     <main className="pt-32 pb-24 max-w-[1400px] mx-auto px-6 md:px-10">
@@ -28,16 +48,14 @@ export default function RoomDetailPage({ params }: { params: Promise<{ slug: str
       <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-12 lg:gap-16 mb-20">
         <div>
           <div className="aspect-[4/3] relative bg-aegean overflow-hidden mb-3">
-            <Image
-              src={room.images[activeImg]}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={room.images[activeImg] || room.images[0]}
               alt={t(room.name.tr, room.name.en)}
-              fill
-              className="object-cover transition-opacity"
-              sizes="(min-width: 1024px) 60vw, 100vw"
-              priority
+              className="absolute inset-0 w-full h-full object-cover transition-opacity"
             />
           </div>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
             {room.images.map((src, i) => (
               <button
                 key={src + i}
@@ -47,7 +65,8 @@ export default function RoomDetailPage({ params }: { params: Promise<{ slug: str
                 }`}
                 aria-label={`Image ${i + 1}`}
               >
-                <Image src={src} alt="" fill className="object-cover" sizes="200px" />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={src} alt="" className="absolute inset-0 w-full h-full object-cover" />
               </button>
             ))}
           </div>
@@ -89,7 +108,7 @@ export default function RoomDetailPage({ params }: { params: Promise<{ slug: str
                 <div className="text-muted text-sm">{t('gecelik', 'per night')}</div>
               </div>
               <div className="text-right text-[0.78rem] tracking-[0.15em] uppercase text-muted">
-                {t('Kahvaltı dahil', 'Breakfast incl.')}
+                {t('Kahvaltı opsiyonel', 'Breakfast optional')}
               </div>
             </div>
             <Link href={`/rezervasyon?room=${room.slug}`} className="btn-terracotta block text-center w-full">
@@ -105,10 +124,11 @@ export default function RoomDetailPage({ params }: { params: Promise<{ slug: str
             {t('Diğer odalar', 'Other rooms')}
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {rooms.filter((r) => r.slug !== room.slug).slice(0, 4).map((r) => (
+            {allRooms.filter((r) => r.slug !== room.slug).slice(0, 4).map((r) => (
               <Link key={r.slug} href={`/odalar/${r.slug}`} className="block group">
                 <div className="aspect-[4/5] relative overflow-hidden bg-aegean mb-3">
-                  <Image src={r.images[0]} alt={t(r.name.tr, r.name.en)} fill className="object-cover transition-transform duration-700 group-hover:scale-105" sizes="25vw" />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={r.images[0]} alt={t(r.name.tr, r.name.en)} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                 </div>
                 <div className="font-display text-lg">{t(r.name.tr, r.name.en)}</div>
                 <div className="text-muted text-sm">{formatPrice(r.pricePerNight, lang)} / {t('gece', 'night')}</div>

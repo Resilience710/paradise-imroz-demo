@@ -3,7 +3,7 @@
 import { Reveal } from '@/components/reveal';
 import { PageHeader } from '@/components/page-header';
 import { useLang } from '@/components/lang/lang-provider';
-import { distances, hotelInfo } from '@/lib/data';
+import { distances, hotelInfo, nearbyPlaces } from '@/lib/data';
 
 export default function LocationPage() {
   const { t } = useLang();
@@ -107,6 +107,46 @@ export default function LocationPage() {
                 'Bicycles are free at the hotel. We work with a local car rental.'
               )}
             />
+          </div>
+        </Reveal>
+
+        <Reveal>
+          <div className="mt-20 pt-12 border-t border-line">
+            <div className="eyebrow">{t('Yakında', 'Nearby')}</div>
+            <h2 className="section-title">{t('Yürüme mesafesinde sevdiğimiz yerler', 'Walking-distance favourites')}</h2>
+            <p className="text-muted text-[1.05rem] leading-relaxed max-w-[640px] mb-10">
+              {t(
+                "Adanın merkezinde 3-6 dakikalık yürüyüşle ulaşılan, bizim de sık gittiğimiz birkaç yer.",
+                "A few of our own favourites, all 3-6 minutes' walk in the town center."
+              )}
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {nearbyPlaces.map((p) => (
+                <div key={p.name} className="bg-cream border border-line p-5 flex items-start gap-4">
+                  <div className="font-display text-aegean text-3xl leading-none mt-1">
+                    {p.rating?.toFixed(1)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-baseline justify-between gap-2 mb-1">
+                      <h3 className="font-display text-xl">{p.name}</h3>
+                      {p.walkMin && (
+                        <span className="text-[0.65rem] tracking-[0.2em] uppercase text-muted whitespace-nowrap">
+                          {p.walkMin} {t('dk', 'min')}
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-xs text-muted tracking-wide uppercase mb-2">
+                      {t(p.category.tr, p.category.en)}
+                    </div>
+                    {p.note && (
+                      <p className="text-sm leading-relaxed text-ink/80">
+                        {t(p.note.tr, p.note.en)}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </Reveal>
       </div>

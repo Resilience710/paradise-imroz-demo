@@ -4,7 +4,7 @@ import { use, useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { rooms, hotelInfo } from '@/lib/data';
-import { getBooking, formatDate, formatPrice, type Booking } from '@/lib/booking';
+import { getBooking, formatDate, formatPrice, onBookingsChange, STATUS_LABELS, type Booking } from '@/lib/booking';
 import { useLang } from '@/components/lang/lang-provider';
 
 export default function ConfirmationPage({ params }: { params: Promise<{ kod: string }> }) {
@@ -14,8 +14,10 @@ export default function ConfirmationPage({ params }: { params: Promise<{ kod: st
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setBooking(getBooking(kod));
+    const refresh = () => setBooking(getBooking(kod));
+    refresh();
     setLoading(false);
+    return onBookingsChange(refresh);
   }, [kod]);
 
   if (loading) {
@@ -40,6 +42,8 @@ export default function ConfirmationPage({ params }: { params: Promise<{ kod: st
   }
 
   const room = rooms.find((r) => r.slug === booking.roomSlug)!;
+  const status = STATUS_LABELS[booking.status];
+
   const waText = encodeURIComponent(
     lang === 'tr'
       ? `Merhaba! ${booking.code} kodlu rezervasyonum hakkında bilgi almak istiyorum.`
@@ -47,23 +51,48 @@ export default function ConfirmationPage({ params }: { params: Promise<{ kod: st
   );
   const waLink = `https://wa.me/${hotelInfo.whatsapp}?text=${waText}`;
 
+  // Status'a göre başlık/açıklama
+  const statusContent = {
+    pending: {
+      title: t('Talebiniz alındı', 'Request received'),
+      sub: t(
+        'Müsaitliği kontrol edip 24 saat içinde dönüş yapacağız. Onaylanır onaylanmaz size bildiririz — bu sayfayı açık tutabilirsiniz.',
+        "We're checking availability and will get back to you within 24 hours. We'll notify you the moment it's confirmed — you can keep this page open."
+      ),
+      icon: '⏳',
+    },
+    approved: {
+      title: t('Rezervasyonunuz onaylandı', 'Your reservation is confirmed'),
+      sub: t(
+        'Sizi bekliyoruz. Giriş saati 14:00, isterseniz daha erken WhatsApp ile haber verin — bagajınızı bahçede bırakabilirsiniz.',
+        "We're looking forward to your arrival. Check-in from 14:00 — let us know on WhatsApp if you're earlier, you can leave your luggage in the garden."
+      ),
+      icon: '✓',
+    },
+    rejected: {
+      title: t('Maalesef bu tarihler dolu', 'Unfortunately fully booked'),
+      sub: t(
+        'Bu tarihler için odamız kalmadı. Başka tarih denemek ister misiniz? Otelcimiz WhatsApp\'tan alternatif önerebilir.',
+        "We're full on these dates. Want to try different ones? Our host can suggest alternatives on WhatsApp."
+      ),
+      icon: '×',
+    },
+  }[booking.status];
+
   return (
     <main className="pt-32 pb-24 max-w-[1000px] mx-auto px-6 md:px-10">
       <div className="text-center mb-12">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-terracotta/10 mb-6">
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="#b65b3c" strokeWidth="2">
-            <path d="M6 16 L 14 24 L 26 8" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+        <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full border ${status.color} mb-6`}>
+          <span className="text-3xl">{statusContent.icon}</span>
         </div>
-        <div className="eyebrow inline-block">{t('Rezervasyon onaylandı', 'Reservation confirmed')}</div>
+        <div className={`inline-block text-[0.7rem] tracking-[0.3em] uppercase border px-3 py-1.5 mb-6 ${status.color}`}>
+          {t(status.tr, status.en)}
+        </div>
         <h1 className="section-title mx-auto text-center">
-          {t('Teşekkürler', 'Thank you')}, <em>{booking.fullName.split(' ')[0]}</em>.
+          {statusContent.title}, <em>{booking.fullName.split(' ')[0]}</em>.
         </h1>
-        <p className="text-[1.1rem] leading-relaxed text-muted max-w-[560px] mx-auto">
-          {t(
-            "Rezervasyon kodunuz aşağıda. Detaylar e-posta adresinize iletildi. Bu bir demodur — gerçek bir e-posta gönderilmez.",
-            "Your reservation code is below. Details have been emailed to you. This is a demo — no real email is sent."
-          )}
+        <p className="text-[1.05rem] leading-relaxed text-muted max-w-[560px] mx-auto">
+          {statusContent.sub}
         </p>
       </div>
 
@@ -89,6 +118,15 @@ export default function ConfirmationPage({ params }: { params: Promise<{ kod: st
             <Row label={t('Gece', 'Nights')} value={`${booking.nights}`} />
             <Row label={t('Misafir', 'Guests')} value={`${booking.guests}`} />
             <Row label={t('Toplam', 'Total')} value={<span className="text-aegean font-display text-2xl">{formatPrice(booking.total, lang)}</span>} />
+
+            {booking.adminNote && (
+              <div className="mt-6 pt-4 border-t border-line">
+                <div className="text-[0.7rem] tracking-[0.3em] uppercase text-muted mb-2">
+                  {t('Otelciden not', 'Note from host')}
+                </div>
+                <p className="text-sm italic font-display">"{booking.adminNote}"</p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -97,12 +135,14 @@ export default function ConfirmationPage({ params }: { params: Promise<{ kod: st
             {t('Sonraki adım', 'Next step')}
           </div>
           <h3 className="font-display text-2xl mb-4 leading-tight">
-            {t('Bir şeyiniz mi var? Bize WhatsApp\'tan ulaşın.', 'Need anything? Reach us on WhatsApp.')}
+            {booking.status === 'rejected'
+              ? t('WhatsApp\'tan alternatif sorun', 'Ask for alternatives on WhatsApp')
+              : t('Bir şeyiniz mi var? WhatsApp\'tan ulaşın.', 'Need anything? Reach us on WhatsApp.')}
           </h3>
           <p className="text-cream/70 text-sm mb-6 leading-relaxed">
             {t(
-              'Giriş saatiniz, transfer, oda dilekleri için en hızlı yol WhatsApp. 7/24 cevap veriyoruz.',
-              'Arrival time, transfers, room preferences — WhatsApp is the fastest. We answer 24/7.'
+              'Giriş saatiniz, transfer, oda dilekleri için en hızlı yol WhatsApp. Yerel aile işletmemiz olarak biz cevap veriyoruz.',
+              'Arrival time, transfers, room preferences — WhatsApp is the fastest. As a local family-run hotel, we answer ourselves.'
             )}
           </p>
           <a href={waLink} target="_blank" rel="noopener noreferrer" className="btn-terracotta block text-center mb-6">
@@ -112,11 +152,15 @@ export default function ConfirmationPage({ params }: { params: Promise<{ kod: st
           <div className="border-t border-cream/20 pt-6 text-sm text-cream/70 space-y-3">
             <div>
               <div className="text-[0.65rem] tracking-[0.3em] uppercase text-cream/50 mb-1">{t('Telefon', 'Phone')}</div>
-              <div className="font-display text-cream">{hotelInfo.phone}</div>
+              <div className="font-display text-cream">{hotelInfo.phoneDisplay}</div>
             </div>
             <div>
               <div className="text-[0.65rem] tracking-[0.3em] uppercase text-cream/50 mb-1">E-mail</div>
               <div className="font-display text-cream">{hotelInfo.email}</div>
+            </div>
+            <div>
+              <div className="text-[0.65rem] tracking-[0.3em] uppercase text-cream/50 mb-1">{t('Adres', 'Address')}</div>
+              <div className="font-display text-cream text-sm leading-snug">{t(hotelInfo.address.tr, hotelInfo.address.en)}</div>
             </div>
           </div>
         </aside>
@@ -128,8 +172,8 @@ export default function ConfirmationPage({ params }: { params: Promise<{ kod: st
         </div>
         <p className="text-muted mb-4 max-w-[600px] mx-auto leading-relaxed">
           {t(
-            `${booking.email} adresine rezervasyon detaylarınızı içeren bir e-posta gönderildi. (Demo: gerçek e-posta gönderilmez.)`,
-            `An email with your reservation details has been sent to ${booking.email}. (Demo: no real email is sent.)`
+            `${booking.email} adresine talebinizin özeti gönderildi. Otelci karar verdiğinde ikinci bir bilgilendirme alacaksınız. (Demo: gerçek e-posta gönderilmez — admin panelinden talep durumu canlı güncellenir.)`,
+            `A summary of your request has been emailed to ${booking.email}. You'll get a second update when the host decides. (Demo: no real email is sent — request status updates live from the admin panel.)`
           )}
         </p>
         <div className="flex flex-wrap justify-center gap-3 mt-6">

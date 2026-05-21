@@ -29,21 +29,21 @@ export function Story() {
           </p>
           <p className="text-lg leading-relaxed mb-6 max-w-[540px]">
             {t(
-              "Paradise Imroz, Gökçeada'nın merkezinde, yürüme mesafesinde her şeye yakın bir köşede. Sekiz oda, bir bahçe, sade bir kahvaltı. Komplikasyonsuz bir tatil için yeterli, biraz da fazla.",
-              'Paradise Imroz sits in the heart of Gökçeada, in a corner walking distance to everything. Eight rooms, a garden, a simple breakfast. Enough for a holiday without complications. Almost too much.'
+              "Paradise İmroz, Gökçeada Fatih Mahallesi'nde, 2023'te yerel bir adalı ailenin açtığı butik otel. İki taş bloka yayılmış sekiz süit — her biri 40 m², müstakil girişli, ahşap balkonlu.",
+              'Paradise İmroz is a boutique hotel in Gökçeada\'s Fatih neighborhood, opened in 2023 by a local island family. Eight suites across two stone blocks — each 40 m², with a private entrance and a wooden balcony.'
             )}
           </p>
           <p className="text-lg leading-relaxed mb-6 max-w-[540px]">
             {t(
-              'Ada eski adıyla Imbros\'tu. Bir dönem İmroz oldu. Sonra Gökçeada. İsimler değişti, ada hiç değişmedi. Sessiz kaldı, yeşil kaldı, denizin dibi hala görünüyor.',
-              "The island was once Imbros. Then İmroz. Now Gökçeada. The names changed, the island didn't. Still quiet, still green, with a sea so clear you can see the bottom."
+              "Ada eski adıyla Imbros'tu. Bir dönem İmroz oldu. Sonra Gökçeada. İsimler değişti, ada hiç değişmedi. Sessiz kaldı, yeşil kaldı, denizin dibi hâlâ görünüyor — biz de o havayı bu sekiz odada tutmaya çalışıyoruz.",
+              "The island was once Imbros, then İmroz, now Gökçeada. The names changed, the island didn't — still quiet, still green, the seabed still visible. We try to hold that feeling inside these eight rooms."
             )}
           </p>
           <div className="grid grid-cols-2 gap-8 pt-8 border-t border-line mt-10">
-            <Stat num="8" label={t('Oda', 'Rooms')} />
+            <Stat num="8" label={t('Süit · 40m²', 'Suites · 40m²')} />
+            <Stat num="2" label={t('Taş blok', 'Stone blocks')} />
             <Stat num={<>5<span className="text-2xl align-super">′</span></>} label={t('Merkeze yürüyüş', 'To town center')} />
-            <Stat num={<>4<span className="text-2xl">km</span></>} label={t('Plaja mesafe', 'To the beach')} />
-            <Stat num="∞" label={t('Bahçeden çıkamama riski', 'Risk of never leaving')} />
+            <Stat num={<>4.9<span className="text-2xl">/5</span></>} label={t('Misafir puanı', 'Guest rating')} />
           </div>
         </Reveal>
 

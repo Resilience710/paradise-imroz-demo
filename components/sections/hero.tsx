@@ -18,9 +18,9 @@ export function Hero() {
         className="absolute inset-0 bg-cover transition-transform duration-[8000ms] ease-out"
         style={{
           backgroundImage:
-            "url('https://images.unsplash.com/photo-1601581875309-fafbf2d3ed3a?w=2400&q=85&auto=format&fit=crop')",
-          backgroundPosition: 'center 40%',
-          opacity: 0.7,
+            "url('https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=2400&q=85&auto=format&fit=crop')",
+          backgroundPosition: 'center 50%',
+          opacity: 0.65,
           transform: loaded ? 'scale(1)' : 'scale(1.05)',
         }}
       />
@@ -59,7 +59,10 @@ export function Hero() {
         >
           <div className="opacity-60 text-[0.7rem]">{t('40° 11′ K · 25° 53′ D', '40° 11′ N · 25° 53′ E')}</div>
           <div>{t('Mayıs · Ekim arası', 'May · October season')}</div>
-          <div>{t('Yeni misafirler için', 'For new arrivals')}</div>
+          <div className="inline-flex items-center gap-2 mt-3 border border-cream/40 px-3 py-1.5 text-[0.62rem]">
+            <span className="text-terracotta">★</span>
+            <span>Tripadvisor Travelers&apos; Choice</span>
+          </div>
         </div>
       </div>
       <div

@@ -67,6 +67,8 @@ export default function RoomDetailPage({ params }: { params: Promise<{ slug: str
               room.view === 'garden' ? t('Bahçe', 'Garden') :
               t('Şehir', 'City')
             } />
+            <Spec label={t('Blok', 'Block')} value={`${room.block}`} />
+            <Spec label={t('Kat', 'Floor')} value={room.floor === 0 ? t('Zemin', 'Ground') : `${room.floor}`} />
           </div>
 
           <div className="mb-8">

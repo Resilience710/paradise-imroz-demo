@@ -94,6 +94,7 @@ export function BookingWizard() {
       email: state.email,
       phone: state.phone,
       note: state.note || undefined,
+      status: 'pending',
       createdAt: new Date().toISOString(),
     };
     saveBooking(booking);

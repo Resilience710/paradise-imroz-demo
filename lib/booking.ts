@@ -1,5 +1,7 @@
 import type { Room } from './data';
 
+export type BookingStatus = 'pending' | 'approved' | 'rejected';
+
 export type Booking = {
   code: string;
   roomSlug: string;
@@ -12,7 +14,10 @@ export type Booking = {
   email: string;
   phone: string;
   note?: string;
+  status: BookingStatus;
   createdAt: string;
+  decidedAt?: string;
+  adminNote?: string;
 };
 
 export function generateBookingCode(): string {
@@ -38,6 +43,7 @@ export function saveBooking(b: Booking) {
   const all = listBookings();
   all.push(b);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+  emitChange();
 }
 
 export function getBooking(code: string): Booking | null {
@@ -55,12 +61,57 @@ export function listBookings(): Booking[] {
   }
 }
 
+export function updateBookingStatus(code: string, status: BookingStatus, adminNote?: string) {
+  if (typeof window === 'undefined') return;
+  const all = listBookings();
+  const idx = all.findIndex((b) => b.code === code);
+  if (idx === -1) return;
+  all[idx] = {
+    ...all[idx],
+    status,
+    decidedAt: new Date().toISOString(),
+    adminNote: adminNote || all[idx].adminNote,
+  };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+  emitChange();
+}
+
+export function deleteBooking(code: string) {
+  if (typeof window === 'undefined') return;
+  const all = listBookings().filter((b) => b.code !== code);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+  emitChange();
+}
+
+function emitChange() {
+  if (typeof window === 'undefined') return;
+  window.dispatchEvent(new CustomEvent('bookings-changed'));
+}
+
+export function onBookingsChange(handler: () => void): () => void {
+  if (typeof window === 'undefined') return () => {};
+  window.addEventListener('bookings-changed', handler);
+  window.addEventListener('storage', handler);
+  return () => {
+    window.removeEventListener('bookings-changed', handler);
+    window.removeEventListener('storage', handler);
+  };
+}
+
 export function formatDate(iso: string, lang: 'tr' | 'en'): string {
   const d = new Date(iso);
   return d.toLocaleDateString(lang === 'tr' ? 'tr-TR' : 'en-GB', {
     day: '2-digit',
     month: 'long',
     year: 'numeric',
+  });
+}
+
+export function formatShortDate(iso: string, lang: 'tr' | 'en'): string {
+  const d = new Date(iso);
+  return d.toLocaleDateString(lang === 'tr' ? 'tr-TR' : 'en-GB', {
+    day: '2-digit',
+    month: 'short',
   });
 }
 
@@ -71,3 +122,9 @@ export function formatPrice(amount: number, lang: 'tr' | 'en'): string {
     maximumFractionDigits: 0,
   }).format(amount);
 }
+
+export const STATUS_LABELS: Record<BookingStatus, { tr: string; en: string; color: string }> = {
+  pending: { tr: 'Onay bekliyor', en: 'Pending', color: 'bg-amber-100 text-amber-900 border-amber-300' },
+  approved: { tr: 'Onaylandı', en: 'Approved', color: 'bg-emerald-100 text-emerald-900 border-emerald-300' },
+  rejected: { tr: 'Reddedildi', en: 'Rejected', color: 'bg-rose-100 text-rose-900 border-rose-300' },
+};

@@ -11,9 +11,17 @@ export default function AdminRoomsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
 
   useEffect(() => {
-    const refresh = () => setBookings(listBookings());
+    let cancelled = false;
+    const refresh = async () => {
+      const b = await listBookings();
+      if (!cancelled) setBookings(b);
+    };
     refresh();
-    return onBookingsChange(refresh);
+    const off = onBookingsChange(refresh);
+    return () => {
+      cancelled = true;
+      off();
+    };
   }, []);
 
   const today = new Date();

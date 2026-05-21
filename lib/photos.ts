@@ -1,4 +1,4 @@
-// Foto yönetimi — statik (public/photos) + admin upload (localStorage base64)
+import { supabase, type DBPhoto } from './supabase';
 
 export type PhotoCategory = 'oda' | 'kahvalti' | 'cephe' | 'bahce' | 'manzara' | 'diger';
 
@@ -13,94 +13,83 @@ export const categoryLabels: Record<PhotoCategory, { tr: string; en: string }> =
 
 export type Photo = {
   id: string;
-  src: string;           // /photos/foo.jpg veya data:image/jpeg;base64,...
+  src: string;
   alt: { tr: string; en: string };
   category: PhotoCategory;
   source: 'static' | 'admin';
-  createdAt?: string;    // sadece admin için
+  sortOrder: number;
+  storagePath: string;
 };
 
-// Otelin gerçek fotoğrafları — public/photos/'a kullanıcı yerleştirdi
-export const staticPhotos: Photo[] = [
-  {
-    id: 'static-cephe-gece',
-    src: '/photos/cephe-gece.png',
-    alt: { tr: 'Otel cephesi · gece · taş bina ahşap balkon', en: 'Hotel facade · night · stone & wood balcony' },
-    category: 'cephe',
-    source: 'static',
-  },
-  {
-    id: 'static-kahvalti',
-    src: '/photos/kahvalti.png',
-    alt: { tr: 'Esnek kahvaltı · liman manzarası', en: 'Flexible breakfast · harbour view' },
-    category: 'kahvalti',
-    source: 'static',
-  },
-  {
-    id: 'static-suit-1',
-    src: '/photos/suit-1.png',
-    alt: { tr: 'Süit · oturma odası', en: 'Suite · living area' },
-    category: 'oda',
-    source: 'static',
-  },
-  {
-    id: 'static-suit-2',
-    src: '/photos/suit-2.png',
-    alt: { tr: 'Süit · ahşap sürgülü kapı · yatak odası geçişi', en: 'Suite · wooden sliding doors · bedroom view' },
-    category: 'oda',
-    source: 'static',
-  },
-  {
-    id: 'static-suit-3',
-    src: '/photos/suit-3.png',
-    alt: { tr: 'Süit · oturma + pencere', en: 'Suite · sitting area & window' },
-    category: 'oda',
-    source: 'static',
-  },
-];
+function fromDB(row: DBPhoto): Photo {
+  return {
+    id: row.id,
+    src: row.url,
+    alt: { tr: row.alt_tr, en: row.alt_en },
+    category: row.category,
+    source: row.storage_path.startsWith('static/') ? 'static' : 'admin',
+    sortOrder: row.sort_order,
+    storagePath: row.storage_path,
+  };
+}
 
-const STORAGE_KEY = 'paradise-imroz-photos';
-
-export function listAdminPhotos(): Photo[] {
-  if (typeof window === 'undefined') return [];
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as Photo[]) : [];
-  } catch {
+export async function listAllPhotos(): Promise<Photo[]> {
+  const { data, error } = await supabase
+    .from('photos')
+    .select('*')
+    .order('sort_order', { ascending: true })
+    .order('created_at', { ascending: false });
+  if (error || !data) {
+    console.error('listAllPhotos', error);
     return [];
   }
+  return (data as DBPhoto[]).map(fromDB);
 }
 
-export function listAllPhotos(): Photo[] {
-  return [...staticPhotos, ...listAdminPhotos()];
+export async function deletePhoto(id: string, storagePath: string) {
+  const res = await fetch('/api/admin/photos/delete', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id, storagePath }),
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    console.error('deletePhoto', err);
+  }
+  notifyChange();
 }
 
-export function addAdminPhoto(p: Photo) {
-  if (typeof window === 'undefined') return;
-  const all = listAdminPhotos();
-  all.push(p);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
-  emit();
+export async function updatePhoto(id: string, patch: { altTr?: string; altEn?: string; category?: PhotoCategory }) {
+  const res = await fetch('/api/admin/photos/update', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id, ...patch }),
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    console.error('updatePhoto', err);
+  }
+  notifyChange();
 }
 
-export function deleteAdminPhoto(id: string) {
-  if (typeof window === 'undefined') return;
-  const all = listAdminPhotos().filter((p) => p.id !== id);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
-  emit();
+export async function uploadPhoto(file: File): Promise<Photo | null> {
+  const form = new FormData();
+  form.append('file', file);
+  const res = await fetch('/api/admin/photos/upload', {
+    method: 'POST',
+    body: form,
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    console.error('uploadPhoto', err);
+    return null;
+  }
+  const data = await res.json();
+  notifyChange();
+  return data as Photo;
 }
 
-export function updateAdminPhoto(id: string, patch: Partial<Photo>) {
-  if (typeof window === 'undefined') return;
-  const all = listAdminPhotos();
-  const idx = all.findIndex((p) => p.id === id);
-  if (idx === -1) return;
-  all[idx] = { ...all[idx], ...patch };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
-  emit();
-}
-
-function emit() {
+function notifyChange() {
   if (typeof window === 'undefined') return;
   window.dispatchEvent(new CustomEvent('photos-changed'));
 }
@@ -108,46 +97,12 @@ function emit() {
 export function onPhotosChange(handler: () => void): () => void {
   if (typeof window === 'undefined') return () => {};
   window.addEventListener('photos-changed', handler);
-  window.addEventListener('storage', handler);
+  const channel = supabase
+    .channel('photos-changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'photos' }, () => handler())
+    .subscribe();
   return () => {
     window.removeEventListener('photos-changed', handler);
-    window.removeEventListener('storage', handler);
+    supabase.removeChannel(channel);
   };
-}
-
-export function newPhotoId(): string {
-  return 'admin-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7);
-}
-
-// Resmi base64'e çevir + olabildiğince küçült (max 1600px en, jpeg 0.82)
-export async function fileToCompressedDataURL(file: File, maxDim = 1600, quality = 0.82): Promise<string> {
-  const dataUrl = await new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-
-  // Resmi yükle
-  const img = await new Promise<HTMLImageElement>((resolve, reject) => {
-    const el = new Image();
-    el.onload = () => resolve(el);
-    el.onerror = reject;
-    el.src = dataUrl;
-  });
-
-  const w = img.naturalWidth;
-  const h = img.naturalHeight;
-  if (w <= maxDim && h <= maxDim && file.size < 600_000) return dataUrl;
-
-  const scale = Math.min(maxDim / w, maxDim / h, 1);
-  const cw = Math.round(w * scale);
-  const ch = Math.round(h * scale);
-  const canvas = document.createElement('canvas');
-  canvas.width = cw;
-  canvas.height = ch;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return dataUrl;
-  ctx.drawImage(img, 0, 0, cw, ch);
-  return canvas.toDataURL('image/jpeg', quality);
 }

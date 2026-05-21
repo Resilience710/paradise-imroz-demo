@@ -4,22 +4,36 @@ import { useEffect, useMemo, useState } from 'react';
 import { Reveal } from '@/components/reveal';
 import { PageHeader } from '@/components/page-header';
 import { useLang } from '@/components/lang/lang-provider';
-import { staticPhotos, listAdminPhotos, onPhotosChange, categoryLabels, type Photo, type PhotoCategory } from '@/lib/photos';
+import { listAllPhotos, onPhotosChange, categoryLabels, type Photo, type PhotoCategory } from '@/lib/photos';
 
 export default function GalleryPage() {
   const { t } = useLang();
-  const [admin, setAdmin] = useState<Photo[]>([]);
+  const [photos, setPhotos] = useState<Photo[]>([]);
   const [filter, setFilter] = useState<PhotoCategory | 'all'>('all');
   const [openIdx, setOpenIdx] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const refresh = () => setAdmin(listAdminPhotos());
+    let cancelled = false;
+    const refresh = async () => {
+      const all = await listAllPhotos();
+      if (!cancelled) {
+        setPhotos(all);
+        setLoading(false);
+      }
+    };
     refresh();
-    return onPhotosChange(refresh);
+    const off = onPhotosChange(refresh);
+    return () => {
+      cancelled = true;
+      off();
+    };
   }, []);
 
-  const all = useMemo(() => [...staticPhotos, ...admin], [admin]);
-  const visible = useMemo(() => (filter === 'all' ? all : all.filter((p) => p.category === filter)), [all, filter]);
+  const visible = useMemo(
+    () => (filter === 'all' ? photos : photos.filter((p) => p.category === filter)),
+    [photos, filter]
+  );
 
   const categories: (PhotoCategory | 'all')[] = ['all', 'cephe', 'oda', 'kahvalti', 'manzara', 'bahce'];
 
@@ -32,8 +46,8 @@ export default function GalleryPage() {
           en: <>Hotel, rooms, breakfast <em>and view</em>.</>,
         }}
         lead={{
-          tr: "Otelin gerçek fotoğraflarından bir seçki. Fotoğrafa tıklayarak büyütebilirsin.",
-          en: "A selection of real photos from the hotel. Click a photo to enlarge.",
+          tr: 'Otelin gerçek fotoğraflarından bir seçki. Fotoğrafa tıklayarak büyütebilirsin.',
+          en: 'A selection of real photos from the hotel. Click a photo to enlarge.',
         }}
       />
 
@@ -48,14 +62,16 @@ export default function GalleryPage() {
           >
             {c === 'all' ? t('Tümü', 'All') : t(categoryLabels[c].tr, categoryLabels[c].en)}
             <span className="ml-2 opacity-70">
-              {c === 'all' ? all.length : all.filter((p) => p.category === c).length}
+              {c === 'all' ? photos.length : photos.filter((p) => p.category === c).length}
             </span>
           </button>
         ))}
       </div>
 
       <div className="max-w-[1400px] mx-auto px-6 md:px-10">
-        {visible.length === 0 ? (
+        {loading ? (
+          <p className="text-muted text-center py-16">{t('Yükleniyor…', 'Loading…')}</p>
+        ) : visible.length === 0 ? (
           <p className="text-muted text-center py-16">{t('Bu kategoride foto yok.', 'No photos in this category.')}</p>
         ) : (
           <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
@@ -69,7 +85,9 @@ export default function GalleryPage() {
                   <img
                     src={p.src}
                     alt={t(p.alt.tr, p.alt.en)}
-                    className={`w-full ${i % 4 === 0 ? 'aspect-[3/4]' : i % 4 === 1 ? 'aspect-[4/3]' : i % 4 === 2 ? 'aspect-square' : 'aspect-[4/5]'} object-cover transition-transform duration-700 group-hover:scale-105`}
+                    className={`w-full ${
+                      i % 4 === 0 ? 'aspect-[3/4]' : i % 4 === 1 ? 'aspect-[4/3]' : i % 4 === 2 ? 'aspect-square' : 'aspect-[4/5]'
+                    } object-cover transition-transform duration-700 group-hover:scale-105`}
                     loading="lazy"
                   />
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-ink/80 to-transparent text-cream px-3 py-2 text-xs opacity-0 group-hover:opacity-100 transition-opacity">
@@ -82,7 +100,7 @@ export default function GalleryPage() {
         )}
       </div>
 
-      {openIdx !== null && (
+      {openIdx !== null && visible[openIdx] && (
         <div
           onClick={() => setOpenIdx(null)}
           className="fixed inset-0 bg-ink/95 z-[200] flex items-center justify-center p-6 cursor-zoom-out"

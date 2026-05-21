@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useLang } from '@/components/lang/lang-provider';
 import { rooms } from '@/lib/data';
 import { isRoomAvailable } from '@/lib/mock-bookings';
-import { generateBookingCode, nightsBetween, calcTotal, saveBooking, type Booking } from '@/lib/booking';
+import { generateBookingCode, nightsBetween, calcTotal, createBooking } from '@/lib/booking';
 import { DateStep } from './step-dates';
 import { RoomStep } from './step-rooms';
 import { GuestStep } from './step-guest';
@@ -79,10 +79,12 @@ export function BookingWizard() {
   const nights = state.checkIn && state.checkOut ? nightsBetween(state.checkIn, state.checkOut) : 0;
   const total = room && nights > 0 ? calcTotal(room, nights) : 0;
 
-  const submit = () => {
-    if (!room || !state.checkIn || !state.checkOut) return null;
+  const [submitting, setSubmitting] = useState(false);
+  const submit = async () => {
+    if (!room || !state.checkIn || !state.checkOut || submitting) return;
+    setSubmitting(true);
     const code = generateBookingCode();
-    const booking: Booking = {
+    const result = await createBooking({
       code,
       roomSlug: room.slug,
       checkIn: state.checkIn.toISOString(),
@@ -94,12 +96,14 @@ export function BookingWizard() {
       email: state.email,
       phone: state.phone,
       note: state.note || undefined,
-      status: 'pending',
-      createdAt: new Date().toISOString(),
-    };
-    saveBooking(booking);
+    });
+    setSubmitting(false);
+    if (!result) {
+      alert('Rezervasyon kaydedilemedi, lütfen tekrar deneyin.');
+      return;
+    }
     sessionStorage.removeItem('wizard-state');
-    router.push(`/rezervasyon/onay/${code}`);
+    router.push(`/rezervasyon/onay/${result.code}`);
   };
 
   // Guard: don't allow going forward without prerequisites

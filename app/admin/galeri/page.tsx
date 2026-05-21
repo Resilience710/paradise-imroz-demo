@@ -1,16 +1,12 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import Image from 'next/image';
 import {
-  staticPhotos,
-  listAdminPhotos,
-  addAdminPhoto,
-  deleteAdminPhoto,
-  updateAdminPhoto,
+  listAllPhotos,
+  uploadPhoto,
+  deletePhoto,
+  updatePhoto,
   onPhotosChange,
-  fileToCompressedDataURL,
-  newPhotoId,
   categoryLabels,
   type Photo,
   type PhotoCategory,
@@ -19,7 +15,7 @@ import { useLang } from '@/components/lang/lang-provider';
 
 export default function AdminGalleryPage() {
   const { t, lang } = useLang();
-  const [adminPhotos, setAdminPhotos] = useState<Photo[]>([]);
+  const [photos, setPhotos] = useState<Photo[]>([]);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState('');
   const [dragOver, setDragOver] = useState(false);
@@ -27,9 +23,17 @@ export default function AdminGalleryPage() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const refresh = () => setAdminPhotos(listAdminPhotos());
+    let cancelled = false;
+    const refresh = async () => {
+      const all = await listAllPhotos();
+      if (!cancelled) setPhotos(all);
+    };
     refresh();
-    return onPhotosChange(refresh);
+    const off = onPhotosChange(refresh);
+    return () => {
+      cancelled = true;
+      off();
+    };
   }, []);
 
   const handleFiles = async (files: FileList | null) => {
@@ -40,28 +44,20 @@ export default function AdminGalleryPage() {
       const file = arr[i];
       if (!file.type.startsWith('image/')) continue;
       setProgress(`${i + 1} / ${arr.length} · ${file.name}`);
-      try {
-        const dataUrl = await fileToCompressedDataURL(file);
-        addAdminPhoto({
-          id: newPhotoId(),
-          src: dataUrl,
-          alt: { tr: file.name.replace(/\.[^.]+$/, ''), en: file.name.replace(/\.[^.]+$/, '') },
-          category: 'diger',
-          source: 'admin',
-          createdAt: new Date().toISOString(),
-        });
-      } catch (e) {
-        console.error('Upload failed', e);
-      }
+      await uploadPhoto(file);
     }
     setUploading(false);
     setProgress('');
     if (inputRef.current) inputRef.current.value = '';
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (p: Photo) => {
+    if (p.source === 'static') {
+      alert(t('Statik fotoğraflar buradan silinemez.', 'Static photos cannot be deleted here.'));
+      return;
+    }
     if (!confirm(t('Bu fotoğrafı silmek istiyor musun?', 'Delete this photo?'))) return;
-    deleteAdminPhoto(id);
+    await deletePhoto(p.id, p.storagePath);
   };
 
   const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -69,6 +65,9 @@ export default function AdminGalleryPage() {
     setDragOver(false);
     handleFiles(e.dataTransfer.files);
   };
+
+  const statics = photos.filter((p) => p.source === 'static');
+  const uploads = photos.filter((p) => p.source === 'admin');
 
   return (
     <div>
@@ -78,8 +77,8 @@ export default function AdminGalleryPage() {
           <h1 className="font-display text-4xl">{t('Galeri', 'Gallery')}</h1>
           <p className="text-muted text-sm mt-2">
             {t(
-              'Otelin gerçek fotoğraflarını buradan yönet. Statik fotoğraflar siteyle birlikte deploy edilir, sen yüklediklerin sadece bu tarayıcıda saklanır (demo).',
-              'Manage real hotel photos here. Static ones deploy with the site; your uploads live in this browser (demo).'
+              'Otelin gerçek fotoğraflarını buradan yönet. Tüm fotoğraflar Supabase\'de saklanır — her cihazda aynı görünür.',
+              'Manage real hotel photos here. All photos live in Supabase — visible on every device.'
             )}
           </p>
         </div>
@@ -117,33 +116,23 @@ export default function AdminGalleryPage() {
         </div>
         <div className="text-sm text-muted">
           {t(
-            'veya yukarıdaki butona tıkla · birden fazla seçebilirsin · max 1600px\'e küçültülür',
-            "or click the button above · select multiple · resized to max 1600px"
+            'veya yukarıdaki butona tıkla · birden fazla seçebilirsin · Supabase Storage\'a yüklenir',
+            'or click the button above · select multiple · uploaded to Supabase Storage'
           )}
         </div>
       </div>
 
-      {/* Statik fotoğraflar */}
+      {/* Static photos */}
       <section className="mb-12">
         <div className="flex items-baseline justify-between mb-4">
           <h2 className="font-display text-2xl">{t('Statik fotoğraflar', 'Static photos')}</h2>
           <span className="text-[0.7rem] tracking-[0.2em] uppercase text-muted">
-            {staticPhotos.length} {t('adet · siteyle deploy olur', 'photos · deployed with site')}
+            {statics.length} {t('adet · siteyle deploy olur', 'photos · deployed with site')}
           </span>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {staticPhotos.map((p) => (
-            <div key={p.id} className="bg-cream border border-line overflow-hidden">
-              <div className="aspect-[4/3] relative bg-aegean">
-                <Image src={p.src} alt={t(p.alt.tr, p.alt.en)} fill className="object-cover" sizes="25vw" />
-              </div>
-              <div className="p-3">
-                <div className="text-[0.62rem] tracking-[0.25em] uppercase text-terracotta mb-1">
-                  {t(categoryLabels[p.category].tr, categoryLabels[p.category].en)}
-                </div>
-                <div className="text-xs text-ink leading-tight">{t(p.alt.tr, p.alt.en)}</div>
-              </div>
-            </div>
+          {statics.map((p) => (
+            <PhotoCard key={p.id} photo={p} editing={false} onEdit={() => {}} onSave={() => {}} onDelete={() => {}} lang={lang} t={t} readonly />
           ))}
         </div>
       </section>
@@ -151,28 +140,28 @@ export default function AdminGalleryPage() {
       {/* Admin uploads */}
       <section>
         <div className="flex items-baseline justify-between mb-4">
-          <h2 className="font-display text-2xl">{t('Yüklediklerin', 'Your uploads')}</h2>
+          <h2 className="font-display text-2xl">{t('Yüklenenler', 'Uploads')}</h2>
           <span className="text-[0.7rem] tracking-[0.2em] uppercase text-muted">
-            {adminPhotos.length} {t('adet · sadece bu tarayıcı', 'photos · this browser only')}
+            {uploads.length} {t('adet · Supabase Storage', 'photos · Supabase Storage')}
           </span>
         </div>
-        {adminPhotos.length === 0 ? (
+        {uploads.length === 0 ? (
           <div className="bg-cream border border-line p-10 text-center text-muted">
-            {t('Henüz yüklediğin fotoğraf yok.', 'You haven\'t uploaded any photos yet.')}
+            {t("Henüz yüklenmiş fotoğraf yok.", 'No uploads yet.')}
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {adminPhotos.map((p) => (
+            {uploads.map((p) => (
               <PhotoCard
                 key={p.id}
                 photo={p}
                 editing={editing === p.id}
                 onEdit={() => setEditing(editing === p.id ? null : p.id)}
-                onSave={(patch) => {
-                  updateAdminPhoto(p.id, patch);
+                onSave={async (patch) => {
+                  await updatePhoto(p.id, patch);
                   setEditing(null);
                 }}
-                onDelete={() => handleDelete(p.id)}
+                onDelete={() => handleDelete(p)}
                 lang={lang}
                 t={t}
               />
@@ -192,14 +181,16 @@ function PhotoCard({
   onDelete,
   lang,
   t,
+  readonly,
 }: {
   photo: Photo;
   editing: boolean;
   onEdit: () => void;
-  onSave: (patch: Partial<Photo>) => void;
+  onSave: (patch: { altTr?: string; altEn?: string; category?: PhotoCategory }) => void;
   onDelete: () => void;
   lang: 'tr' | 'en';
   t: (tr: string, en: string) => string;
+  readonly?: boolean;
 }) {
   const [altTr, setAltTr] = useState(photo.alt.tr);
   const [altEn, setAltEn] = useState(photo.alt.en);
@@ -208,7 +199,6 @@ function PhotoCard({
   return (
     <div className="bg-cream border border-line overflow-hidden">
       <div className="aspect-[4/3] relative bg-aegean">
-        {/* admin uploads are base64 data URLs — use plain img to avoid next/image domain rules */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={photo.src} alt={t(photo.alt.tr, photo.alt.en)} className="absolute inset-0 w-full h-full object-cover" />
       </div>
@@ -238,7 +228,7 @@ function PhotoCard({
             </select>
             <div className="flex justify-between gap-2 mt-2">
               <button
-                onClick={() => onSave({ alt: { tr: altTr, en: altEn }, category: cat })}
+                onClick={() => onSave({ altTr, altEn, category: cat })}
                 className="text-[0.65rem] tracking-[0.2em] uppercase bg-emerald-600 text-white px-3 py-1.5 hover:bg-emerald-700"
               >
                 {t('Kaydet', 'Save')}
@@ -254,10 +244,12 @@ function PhotoCard({
               {t(categoryLabels[photo.category].tr, categoryLabels[photo.category].en)}
             </div>
             <div className="text-xs text-ink leading-tight mb-3 min-h-[2em]">{t(photo.alt.tr, photo.alt.en)}</div>
-            <div className="flex justify-between text-[0.62rem] tracking-[0.2em] uppercase">
-              <button onClick={onEdit} className="text-aegean hover:text-terracotta">{t('Düzenle', 'Edit')}</button>
-              <button onClick={onDelete} className="text-rose-600 hover:underline">{t('Sil', 'Delete')}</button>
-            </div>
+            {!readonly && (
+              <div className="flex justify-between text-[0.62rem] tracking-[0.2em] uppercase">
+                <button onClick={onEdit} className="text-aegean hover:text-terracotta">{t('Düzenle', 'Edit')}</button>
+                <button onClick={onDelete} className="text-rose-600 hover:underline">{t('Sil', 'Delete')}</button>
+              </div>
+            )}
           </>
         )}
       </div>

@@ -5,9 +5,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState, type ReactNode } from 'react';
 import { useLang } from '@/components/lang/lang-provider';
 
-const PASSWORD = 'admin'; // demo only
-const AUTH_KEY = 'paradise-imroz-admin-auth';
-
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -15,25 +12,36 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   const [authed, setAuthed] = useState<boolean | null>(null);
   const [input, setInput] = useState('');
   const [err, setErr] = useState(false);
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    setAuthed(localStorage.getItem(AUTH_KEY) === '1');
+    // session check via cookie (server-only). Try a tiny privileged ping.
+    fetch('/api/admin/check', { credentials: 'include' })
+      .then((r) => setAuthed(r.ok))
+      .catch(() => setAuthed(false));
   }, []);
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (input === PASSWORD) {
-      localStorage.setItem(AUTH_KEY, '1');
+    setBusy(true);
+    setErr(false);
+    const res = await fetch('/api/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ password: input }),
+    });
+    setBusy(false);
+    if (res.ok) {
       setAuthed(true);
-      setErr(false);
+      setInput('');
     } else {
       setErr(true);
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem(AUTH_KEY);
+  const logout = async () => {
+    await fetch('/api/admin/login', { method: 'DELETE', credentials: 'include' });
     setAuthed(false);
     router.push('/admin');
   };
@@ -49,9 +57,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           <div className="eyebrow">{t('Yönetim', 'Admin')}</div>
           <h1 className="font-display text-3xl mb-2">Paradise <em className="italic text-aegean">Imroz</em></h1>
           <p className="text-muted mb-6 text-sm">
-            {t(
-              'Bu alan otelciye özeldir. Demo şifresi: ', 'Admin area. Demo password: '
-            )}
+            {t('Bu alan otelciye özeldir. Demo şifresi: ', 'Admin area. Demo password: ')}
             <code className="bg-ink text-cream px-2 py-0.5 text-xs">admin</code>
           </p>
           <label className="block">
@@ -65,15 +71,15 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             />
           </label>
           {err && <p className="text-terracotta text-xs mt-2">{t('Şifre yanlış.', 'Wrong password.')}</p>}
-          <button type="submit" className="btn-terracotta w-full mt-6">
-            {t('Giriş yap', 'Sign in')}
+          <button type="submit" disabled={busy} className="btn-terracotta w-full mt-6 disabled:opacity-50">
+            {busy ? t('Giriş yapılıyor…', 'Signing in…') : t('Giriş yap', 'Sign in')}
           </button>
         </form>
       </main>
     );
   }
 
-  const NavLink = ({ href, label, count }: { href: string; label: string; count?: number }) => {
+  const NavLink = ({ href, label }: { href: string; label: string }) => {
     const active = pathname === href;
     return (
       <Link
@@ -82,14 +88,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           active ? 'bg-ink text-cream' : 'text-ink hover:bg-cream'
         }`}
       >
-        <span className="flex items-center justify-between gap-3">
-          <span>{label}</span>
-          {typeof count === 'number' && (
-            <span className={`text-[0.65rem] tracking-[0.15em] px-2 py-0.5 ${active ? 'bg-cream text-ink' : 'bg-ink text-cream'}`}>
-              {count}
-            </span>
-          )}
-        </span>
+        {label}
       </Link>
     );
   };

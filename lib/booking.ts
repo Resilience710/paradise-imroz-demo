@@ -1,4 +1,5 @@
 import type { Room } from './data';
+import { supabase, type DBBooking } from './supabase';
 
 export type BookingStatus = 'pending' | 'approved' | 'rejected';
 
@@ -20,6 +21,26 @@ export type Booking = {
   adminNote?: string;
 };
 
+function fromDB(row: DBBooking): Booking {
+  return {
+    code: row.code,
+    roomSlug: row.room_slug,
+    checkIn: row.check_in,
+    checkOut: row.check_out,
+    nights: row.nights,
+    guests: row.guests,
+    total: row.total,
+    fullName: row.full_name,
+    email: row.email,
+    phone: row.phone,
+    note: row.note || undefined,
+    status: row.status,
+    adminNote: row.admin_note || undefined,
+    decidedAt: row.decided_at || undefined,
+    createdAt: row.created_at,
+  };
+}
+
 export function generateBookingCode(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let out = 'PRD-';
@@ -36,54 +57,74 @@ export function calcTotal(room: Room, nights: number): number {
   return room.pricePerNight * nights;
 }
 
-const STORAGE_KEY = 'paradise-imroz-bookings';
+// === DB API ===
 
-export function saveBooking(b: Booking) {
-  if (typeof window === 'undefined') return;
-  const all = listBookings();
-  all.push(b);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
-  emitChange();
-}
-
-export function getBooking(code: string): Booking | null {
-  if (typeof window === 'undefined') return null;
-  return listBookings().find((b) => b.code === code) || null;
-}
-
-export function listBookings(): Booking[] {
-  if (typeof window === 'undefined') return [];
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as Booking[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-export function updateBookingStatus(code: string, status: BookingStatus, adminNote?: string) {
-  if (typeof window === 'undefined') return;
-  const all = listBookings();
-  const idx = all.findIndex((b) => b.code === code);
-  if (idx === -1) return;
-  all[idx] = {
-    ...all[idx],
-    status,
-    decidedAt: new Date().toISOString(),
-    adminNote: adminNote || all[idx].adminNote,
+export async function createBooking(b: Omit<Booking, 'createdAt' | 'status'>): Promise<Booking | null> {
+  const payload = {
+    code: b.code,
+    room_slug: b.roomSlug,
+    check_in: b.checkIn.slice(0, 10),
+    check_out: b.checkOut.slice(0, 10),
+    nights: b.nights,
+    guests: b.guests,
+    total: b.total,
+    full_name: b.fullName,
+    email: b.email,
+    phone: b.phone,
+    note: b.note || null,
+    status: 'pending' as const,
   };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
-  emitChange();
+  const { data, error } = await supabase.from('bookings').insert(payload).select().single();
+  if (error || !data) {
+    console.error('createBooking', error);
+    return null;
+  }
+  return fromDB(data as DBBooking);
 }
 
-export function deleteBooking(code: string) {
-  if (typeof window === 'undefined') return;
-  const all = listBookings().filter((b) => b.code !== code);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
-  emitChange();
+export async function getBooking(code: string): Promise<Booking | null> {
+  const { data, error } = await supabase.from('bookings').select('*').eq('code', code).maybeSingle();
+  if (error || !data) return null;
+  return fromDB(data as DBBooking);
 }
 
-function emitChange() {
+export async function listBookings(): Promise<Booking[]> {
+  const { data, error } = await supabase
+    .from('bookings')
+    .select('*')
+    .order('created_at', { ascending: false });
+  if (error || !data) return [];
+  return (data as DBBooking[]).map(fromDB);
+}
+
+// Admin actions — go through API route for service_role privilege
+export async function updateBookingStatus(code: string, status: BookingStatus, adminNote?: string) {
+  const res = await fetch('/api/admin/bookings/update', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code, status, adminNote }),
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    console.error('updateBookingStatus', err);
+  }
+  notifyChange();
+}
+
+export async function deleteBooking(code: string) {
+  const res = await fetch('/api/admin/bookings/delete', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code }),
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    console.error('deleteBooking', err);
+  }
+  notifyChange();
+}
+
+function notifyChange() {
   if (typeof window === 'undefined') return;
   window.dispatchEvent(new CustomEvent('bookings-changed'));
 }
@@ -91,10 +132,16 @@ function emitChange() {
 export function onBookingsChange(handler: () => void): () => void {
   if (typeof window === 'undefined') return () => {};
   window.addEventListener('bookings-changed', handler);
-  window.addEventListener('storage', handler);
+
+  // Realtime: subscribe to bookings table changes
+  const channel = supabase
+    .channel('bookings-changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'bookings' }, () => handler())
+    .subscribe();
+
   return () => {
     window.removeEventListener('bookings-changed', handler);
-    window.removeEventListener('storage', handler);
+    supabase.removeChannel(channel);
   };
 }
 

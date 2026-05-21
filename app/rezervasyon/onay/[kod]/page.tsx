@@ -14,10 +14,17 @@ export default function ConfirmationPage({ params }: { params: Promise<{ kod: st
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const refresh = () => setBooking(getBooking(kod));
-    refresh();
-    setLoading(false);
-    return onBookingsChange(refresh);
+    let cancelled = false;
+    const refresh = async () => {
+      const b = await getBooking(kod);
+      if (!cancelled) setBooking(b);
+    };
+    refresh().finally(() => !cancelled && setLoading(false));
+    const off = onBookingsChange(refresh);
+    return () => {
+      cancelled = true;
+      off();
+    };
   }, [kod]);
 
   if (loading) {

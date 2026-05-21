@@ -8,6 +8,7 @@ Gökçeada / Paradise Imroz butik oteli için Next.js 15 + TypeScript + Tailwind
 
 ```bash
 npm install
+cp .env.local.example .env.local  # değerleri doldur
 npm run dev
 # → http://localhost:3000
 ```
@@ -17,6 +18,23 @@ npm run dev
 ```bash
 npm run build && npm start
 ```
+
+## Supabase / Env Variables
+
+| Anahtar | Değer | Açıklama |
+|---|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | `https://raazmkfsrbtvnwcmhgws.supabase.co` | Client + server tarafında kullanılır |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | (anon JWT) | RLS ile public erişim |
+| `SUPABASE_SERVICE_ROLE_KEY` | (service_role JWT) | Sadece API route'larda; admin işlemleri için |
+| `ADMIN_PASSWORD_HASH` | `8c697...a918` | Admin şifresinin SHA-256 hex'i. Default: `admin` |
+
+**Vercel'e deploy ederken** Settings → Environment Variables sekmesinden bu 4 değişkeni ekle (Production + Preview + Development hepsine).
+
+Şifreyi değiştirmek için:
+```bash
+echo -n "yenisifre" | sha256sum
+```
+çıkan hex'i hem `.env.local`'e hem `Vercel`'e koy.
 
 ## Vercel'e Deploy
 

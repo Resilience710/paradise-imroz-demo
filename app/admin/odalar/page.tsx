@@ -289,14 +289,14 @@ function RoomEditModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-ink/70 z-[200] flex items-start justify-center overflow-y-auto p-6" onClick={onClose}>
-      <div onClick={(e) => e.stopPropagation()} className="bg-bone border border-line w-full max-w-3xl mt-20 mb-10">
-        <header className="flex items-baseline justify-between px-6 py-4 border-b border-line">
+    <div className="fixed inset-0 bg-ink/70 z-[200] overflow-y-auto" onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()} className="bg-bone border-0 md:border md:border-line w-full md:max-w-3xl min-h-screen md:min-h-0 md:mt-20 md:mb-10 md:mx-auto">
+        <header className="sticky top-0 z-10 flex items-baseline justify-between px-5 md:px-6 py-4 border-b border-line bg-bone">
           <div>
             <div className="text-[0.7rem] tracking-[0.3em] uppercase text-muted">{t('Düzenle', 'Edit')}</div>
             <h2 className="font-display text-2xl">{t(merged.name.tr, merged.name.en)}</h2>
           </div>
-          <button onClick={onClose} className="text-muted hover:text-ink text-xl">×</button>
+          <button onClick={onClose} aria-label="Close" className="text-muted hover:text-ink text-3xl leading-none w-10 h-10 flex items-center justify-center">×</button>
         </header>
 
         {/* PRICE */}

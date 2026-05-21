@@ -10,7 +10,7 @@ export function FAQ() {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
-    <section className="px-6 md:px-10 py-32 bg-bone border-t border-line">
+    <section className="px-5 md:px-10 py-16 md:py-32 bg-bone border-t border-line">
       <div className="max-w-[1000px] mx-auto">
         <Reveal>
           <div className="eyebrow">{t('Sıkça Sorulan Sorular', 'FAQ')}</div>

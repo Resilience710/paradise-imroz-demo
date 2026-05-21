@@ -7,7 +7,7 @@ import { distances } from '@/lib/data';
 export function LocationTeaser() {
   const { t, lang } = useLang();
   return (
-    <section id="location" className="bg-cream border-t border-b border-line px-6 md:px-10 py-32">
+    <section id="location" className="bg-cream border-t border-b border-line px-5 md:px-10 py-16 md:py-32">
       <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
         <Reveal>
           <div className="eyebrow">{t('Konum', 'Where we are')}</div>

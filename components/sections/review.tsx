@@ -7,7 +7,7 @@ import { hotelInfo } from '@/lib/data';
 export function Review() {
   const { t, lang } = useLang();
   return (
-    <section className="px-6 md:px-10 py-32 text-center bg-cream border-t border-line">
+    <section className="px-5 md:px-10 py-16 md:py-32 text-center bg-cream border-t border-line">
       <Reveal>
         <div className="max-w-[900px] mx-auto">
           <div className="flex flex-wrap items-stretch justify-center gap-4 mb-12">

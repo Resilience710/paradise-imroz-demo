@@ -13,7 +13,7 @@ export function Hero() {
   }, []);
 
   return (
-    <section className="relative h-screen min-h-[700px] flex items-end overflow-hidden bg-aegean-deep px-6 md:px-10 py-16">
+    <section className="relative h-[100svh] min-h-[560px] md:min-h-[700px] flex items-end overflow-hidden bg-aegean-deep px-4 md:px-10 py-10 md:py-16">
       <div
         className="absolute inset-0 bg-cover transition-transform duration-[8000ms] ease-out"
         style={{
@@ -24,15 +24,15 @@ export function Hero() {
         }}
       />
       <div className="absolute inset-0 bg-gradient-to-b from-aegean-deep/30 via-aegean-deep/10 to-aegean-deep/[0.85]" />
-      <div className="relative z-10 text-cream max-w-[1400px] w-full mx-auto grid grid-cols-1 md:grid-cols-[1fr_auto] items-end gap-8 md:gap-12">
+      <div className="relative z-10 text-cream max-w-[1400px] w-full mx-auto grid grid-cols-1 md:grid-cols-[1fr_auto] items-end gap-6 md:gap-12">
         <div>
           <div className="text-[0.75rem] tracking-[0.4em] uppercase mb-6 opacity-0 animate-fadeUp" style={{ animationDelay: '0.3s' }}>
             <span className="inline-block w-[30px] h-px bg-cream align-middle mr-4" />
             {t('Gökçeada · 8 odalı butik otel', 'Gökçeada · 8-room boutique hotel')}
           </div>
           <h1
-            className="font-display font-extralight leading-[0.95] tracking-[-0.03em] mb-6 opacity-0 animate-fadeUp"
-            style={{ fontSize: 'clamp(3rem, 8vw, 7rem)', animationDelay: '0.5s' }}
+            className="font-display font-extralight leading-[0.95] tracking-[-0.03em] mb-4 md:mb-6 opacity-0 animate-fadeUp"
+            style={{ fontSize: 'clamp(2.5rem, 9vw, 7rem)', animationDelay: '0.5s' }}
           >
             {lang === 'tr' ? (
               <>
@@ -45,7 +45,7 @@ export function Hero() {
               </>
             )}
           </h1>
-          <p className="text-lg max-w-[460px] opacity-0 animate-fadeUp leading-relaxed" style={{ animationDelay: '0.8s' }}>
+          <p className="text-base md:text-lg max-w-[460px] opacity-0 animate-fadeUp leading-relaxed" style={{ animationDelay: '0.8s' }}>
             {t(
               "Imroz'un ortasında, denizin her tarafından duyulduğu bir bahçede, sekiz oda. Aceleye, gürültüye, kalabalığa yer yok.",
               'Eight rooms in a garden in the middle of Imbros, where the sea can be heard from every side. No place for hurry, noise, or crowds.'

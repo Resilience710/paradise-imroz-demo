@@ -8,7 +8,7 @@ import { hotelInfo } from '@/lib/data';
 export function ReservationCTA() {
   const { t, lang } = useLang();
   return (
-    <section id="reservation" className="bg-ink text-cream px-6 md:px-10 py-32">
+    <section id="reservation" className="bg-ink text-cream px-5 md:px-10 py-16 md:py-32">
       <div className="max-w-[1100px] mx-auto grid grid-cols-1 lg:grid-cols-[5fr_6fr] gap-12 lg:gap-20 items-start">
         <Reveal>
           <div className="eyebrow text-terracotta">{t('Rezervasyon', 'Reserve')}</div>

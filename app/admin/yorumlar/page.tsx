@@ -145,13 +145,13 @@ export default function AdminReviewsPage() {
       </div>
 
       {editing && (
-        <div className="fixed inset-0 bg-ink/70 z-[200] flex items-start justify-center overflow-y-auto p-6" onClick={cancel}>
-          <div onClick={(e) => e.stopPropagation()} className="bg-bone border border-line w-full max-w-2xl mt-20 mb-10">
-            <header className="flex items-baseline justify-between px-6 py-4 border-b border-line">
+        <div className="fixed inset-0 bg-ink/70 z-[200] overflow-y-auto" onClick={cancel}>
+          <div onClick={(e) => e.stopPropagation()} className="bg-bone border-0 md:border md:border-line w-full md:max-w-2xl min-h-screen md:min-h-0 md:mt-20 md:mb-10 md:mx-auto">
+            <header className="sticky top-0 z-10 flex items-baseline justify-between px-5 md:px-6 py-4 border-b border-line bg-bone">
               <h2 className="font-display text-2xl">
                 {editing._new ? t('Yeni yorum', 'New review') : t('Yorumu düzenle', 'Edit review')}
               </h2>
-              <button onClick={cancel} className="text-muted hover:text-ink text-xl">×</button>
+              <button onClick={cancel} aria-label="Close" className="text-muted hover:text-ink text-3xl leading-none w-10 h-10 flex items-center justify-center">×</button>
             </header>
             <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Field label={t('Puan (1-10)', 'Rating (1-10)')}>

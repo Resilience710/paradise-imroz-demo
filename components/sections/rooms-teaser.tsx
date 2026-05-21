@@ -29,7 +29,7 @@ export function RoomsTeaser() {
   const featured = merged.slice(0, 4);
 
   return (
-    <section id="rooms" className="max-w-[1400px] mx-auto px-6 md:px-10 py-28">
+    <section id="rooms" className="max-w-[1400px] mx-auto px-5 md:px-10 py-16 md:py-28">
       <Reveal>
         <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-12 items-end mb-12">
           <div>

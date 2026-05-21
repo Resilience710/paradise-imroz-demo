@@ -36,7 +36,7 @@
   .display-italic { @apply font-display font-light italic; }
 
   .eyebrow {
-    @apply text-[0.72rem] tracking-[0.4em] uppercase text-terracotta font-medium mb-6 inline-block;
+    @apply text-[0.68rem] md:text-[0.72rem] tracking-[0.35em] md:tracking-[0.4em] uppercase text-terracotta font-medium mb-4 md:mb-6 inline-block;
   }
   .eyebrow::before {
     content: '';
@@ -49,8 +49,8 @@
   }
 
   .section-title {
-    @apply font-display font-light leading-[1.05] tracking-[-0.02em] mb-8 max-w-[900px];
-    font-size: clamp(2.4rem, 5vw, 4rem);
+    @apply font-display font-light leading-[1.05] tracking-[-0.02em] mb-6 md:mb-8 max-w-[900px];
+    font-size: clamp(1.9rem, 5vw, 4rem);
   }
   .section-title em {
     @apply not-italic;

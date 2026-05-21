@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DayPicker, type DateRange } from 'react-day-picker';
 import 'react-day-picker/style.css';
 import { tr, enGB } from 'date-fns/locale';
@@ -19,6 +19,16 @@ export function DateStep({ state, setState, onNext }: Props) {
   const [range, setRange] = useState<DateRange | undefined>(
     state.checkIn && state.checkOut ? { from: state.checkIn, to: state.checkOut } : undefined
   );
+  const [monthCount, setMonthCount] = useState(2);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mq = window.matchMedia('(min-width: 768px)');
+    const update = () => setMonthCount(mq.matches ? 2 : 1);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
 
   const nights = range?.from && range?.to ? nightsBetween(range.from, range.to) : 0;
 
@@ -32,13 +42,13 @@ export function DateStep({ state, setState, onNext }: Props) {
   today.setHours(0, 0, 0, 0);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-12">
-      <div className="bg-cream border border-line p-6 md:p-8 overflow-x-auto">
+    <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-6 lg:gap-12">
+      <div className="bg-cream border border-line p-4 md:p-8 overflow-x-auto">
         <DayPicker
           mode="range"
           selected={range}
           onSelect={setRange}
-          numberOfMonths={2}
+          numberOfMonths={monthCount}
           locale={lang === 'tr' ? tr : enGB}
           weekStartsOn={1}
           disabled={{ before: today }}
@@ -46,7 +56,7 @@ export function DateStep({ state, setState, onNext }: Props) {
         />
       </div>
 
-      <div className="bg-cream border border-line p-6 md:p-8">
+      <div className="bg-cream border border-line p-5 md:p-8">
         <div className="text-[0.7rem] tracking-[0.3em] uppercase text-muted mb-4">
           {t('Seçim özeti', 'Selection')}
         </div>

@@ -27,10 +27,10 @@ export function ReviewsStrip() {
   const featured = reviews.slice(0, 6);
 
   return (
-    <section className="bg-aegean-deep text-cream px-6 md:px-10 py-32" id="yorumlar">
+    <section className="bg-aegean-deep text-cream px-5 md:px-10 py-16 md:py-32" id="yorumlar">
       <div className="max-w-[1400px] mx-auto">
         <Reveal>
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-8 items-end mb-16">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6 lg:gap-8 items-start lg:items-end mb-10 md:mb-16">
             <div>
               <div className="eyebrow" style={{ color: 'rgba(245, 240, 230, 0.6)' }}>
                 {t('Misafirlerimiz', 'Our guests')}
@@ -46,16 +46,16 @@ export function ReviewsStrip() {
                   </>
                 )}
               </h2>
-              <p className="text-[1.05rem] leading-relaxed max-w-[600px]" style={{ color: 'rgba(245, 240, 230, 0.75)' }}>
+              <p className="text-base md:text-[1.05rem] leading-relaxed max-w-[600px]" style={{ color: 'rgba(245, 240, 230, 0.75)' }}>
                 {t(
                   `${hotelInfo.reviewCount} doğrulanmış misafir yorumu. Aşağıda kendi sözleri — düzenlenmemiş, kısaltılmamış.`,
                   `${hotelInfo.reviewCount} verified guest reviews. Below in their own words — unedited, unabridged.`
                 )}
               </p>
             </div>
-            <div className="flex flex-col items-end gap-2">
-              <div className="font-display text-7xl leading-none">{hotelInfo.rating}</div>
-              <div className="text-[0.7rem] tracking-[0.25em] uppercase" style={{ color: 'rgba(245,240,230,0.6)' }}>
+            <div className="flex lg:flex-col items-baseline lg:items-end gap-3 lg:gap-2">
+              <div className="font-display text-5xl lg:text-7xl leading-none">{hotelInfo.rating}</div>
+              <div className="text-[0.65rem] md:text-[0.7rem] tracking-[0.25em] uppercase" style={{ color: 'rgba(245,240,230,0.6)' }}>
                 {hotelInfo.reviewCount} {t('yorum · Hotels.com', 'reviews · Hotels.com')}
               </div>
             </div>
@@ -87,7 +87,7 @@ function ReviewCard({ review: r, t, lang }: { review: Review; t: (a: string, b: 
   const visibleBody = !expanded && isLong ? body.slice(0, 200).trimEnd() + '…' : body;
 
   return (
-    <article className="bg-cream/[0.04] border border-cream/15 p-6 flex flex-col">
+    <article className="bg-cream/[0.04] border border-cream/15 p-5 md:p-6 flex flex-col">
       <div className="flex items-baseline justify-between mb-4">
         <div className="flex items-baseline gap-2">
           <span className="font-display text-3xl leading-none text-terracotta">{r.rating}</span>

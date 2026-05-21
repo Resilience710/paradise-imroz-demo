@@ -3,7 +3,7 @@
 import { Reveal } from '@/components/reveal';
 import { PageHeader } from '@/components/page-header';
 import { useLang } from '@/components/lang/lang-provider';
-import { distances, hotelInfo, nearbyPlaces } from '@/lib/data';
+import { distances, hotelInfo, nearbyPlaces, policies } from '@/lib/data';
 
 export default function LocationPage() {
   const { t } = useLang();
@@ -107,6 +107,30 @@ export default function LocationPage() {
                 'Bicycles are free at the hotel. We work with a local car rental.'
               )}
             />
+          </div>
+        </Reveal>
+
+        <Reveal>
+          <div className="mt-20 pt-12 border-t border-line">
+            <div className="eyebrow">{t('Politikalar', 'Policies')}</div>
+            <h2 className="section-title">{t('Konaklama bilgileri ve kurallar', 'Stay info & house rules')}</h2>
+            <p className="text-muted text-[1.05rem] leading-relaxed max-w-[640px] mb-10">
+              {t(
+                'Sürprizler olmasın diye bilmeniz gerekenleri tek yere topladık. Daha detay için WhatsApp\'tan yazın.',
+                "Everything you should know up front — no surprises. For anything else, just message us on WhatsApp.",
+              )}
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-16">
+              {policies.map((p) => (
+                <div key={p.title.tr} className="bg-cream border border-line p-5">
+                  <h3 className="font-display text-xl mb-2 text-aegean">{t(p.title.tr, p.title.en)}</h3>
+                  <p className="text-sm leading-relaxed text-ink/80">{t(p.body.tr, p.body.en)}</p>
+                </div>
+              ))}
+            </div>
+            <p className="text-xs text-muted tracking-wide">
+              T.C. {t('Konaklama Yeri Tescil No', 'Accommodation Reg. No')}: <span className="font-display">{hotelInfo.registrationNo}</span>
+            </p>
           </div>
         </Reveal>
 

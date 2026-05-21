@@ -43,7 +43,7 @@ export function Story() {
             <Stat num="8" label={t('Süit · 40m²', 'Suites · 40m²')} />
             <Stat num="2" label={t('Taş blok', 'Stone blocks')} />
             <Stat num={<>5<span className="text-2xl align-super">′</span></>} label={t('Merkeze yürüyüş', 'To town center')} />
-            <Stat num={<>4.9<span className="text-2xl">/5</span></>} label={t('Misafir puanı', 'Guest rating')} />
+            <Stat num={<>9.4<span className="text-2xl">/10</span></>} label={t('Hotels.com · 39 yorum', 'Hotels.com · 39 reviews')} />
           </div>
         </Reveal>
 

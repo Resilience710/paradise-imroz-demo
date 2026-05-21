@@ -307,10 +307,145 @@ export const distances: Distance[] = [
   { name: { tr: 'Gökçeada Çarşı', en: 'Gökçeada Bazaar' }, value: { tr: '5 dk yürüyüş', en: '5 min walk' }, category: 'town' },
   { name: { tr: 'Gökçeada Kent Müzesi', en: 'Gökçeada Town Museum' }, value: { tr: '3 dk yürüyüş', en: '3 min walk' }, category: 'culture' },
   { name: { tr: 'Ada Rüzgârı (yöresel ürün)', en: 'Ada Rüzgârı (local goods)' }, value: { tr: '4 dk yürüyüş', en: '4 min walk' }, category: 'town' },
-  { name: { tr: 'Aydıncık Plajı', en: 'Aydıncık Beach' }, value: { tr: '7 km', en: '7 km' }, category: 'beach' },
-  { name: { tr: 'Kaleköy Limanı', en: 'Kaleköy Harbour' }, value: { tr: '4 km', en: '4 km' }, category: 'transport' },
+  { name: { tr: 'Kaleköy Limanı', en: 'Kaleköy Harbour' }, value: { tr: '9 dk araç', en: '9 min drive' }, category: 'transport' },
+  { name: { tr: 'Yıldız Koyu', en: 'Yıldız Cove' }, value: { tr: '11 dk araç', en: '11 min drive' }, category: 'beach' },
+  { name: { tr: 'Belediye Plajı', en: 'Town Beach' }, value: { tr: '11 dk araç', en: '11 min drive' }, category: 'beach' },
   { name: { tr: 'Kuzu Limanı (feribot)', en: 'Kuzu Harbour (ferry)' }, value: { tr: '6 km', en: '6 km' }, category: 'transport' },
   { name: { tr: 'Çanakkale Havalimanı', en: 'Çanakkale Airport' }, value: { tr: '43 km', en: '43 km' }, category: 'transport' },
+];
+
+// Politikalar — Hotels.com verisinden
+export type Policy = {
+  title: { tr: string; en: string };
+  body: { tr: string; en: string };
+  icon?: string;
+};
+
+export const policies: Policy[] = [
+  {
+    title: { tr: 'Giriş / Çıkış', en: 'Check-in / Check-out' },
+    body: {
+      tr: 'Giriş: 14:00 sonrası, herhangi bir saat. Çıkış: öğlen 12:00. Hızlı ve temassız giriş/çıkış imkânı mevcut. Anahtar alma talimatları varıştan önce gönderilir.',
+      en: 'Check-in: any time after 14:00. Check-out: 12:00 noon. Express and contactless check-in/out available. Key pickup instructions sent before arrival.',
+    },
+  },
+  {
+    title: { tr: 'Kahvaltı', en: 'Breakfast' },
+    body: {
+      tr: 'Açık büfe kahvaltı isteğe bağlıdır, kişi başı yaklaşık 300-500 TL. Bölgede nadir bulunan zengin bir seçenek — yerel zeytin, peynir, taze ekmek, mevsimlik ürünler.',
+      en: 'Open buffet breakfast is optional, approximately 300-500 TL per person. A rare rich spread in the region — local olives, cheese, fresh bread, seasonal produce.',
+    },
+  },
+  {
+    title: { tr: 'Otopark & İnternet', en: 'Parking & Internet' },
+    body: {
+      tr: 'Tesiste ücretsiz, güvenli ve açık valesiz otopark. Genel alanlar ve tüm odalarda ücretsiz kablosuz internet (50+ Mbps).',
+      en: 'Free, secure, on-site self-parking. Free Wi-Fi in all common areas and rooms (50+ Mbps).',
+    },
+  },
+  {
+    title: { tr: 'Ödeme & Depozito', en: 'Payment & Deposit' },
+    body: {
+      tr: 'Visa, Mastercard ve nakit kabul edilir. Nakitsiz ödeme imkânı vardır. Ek masraflar için konaklama başına 3.000 TL nakit depozito istenir (geri ödemeli). Resmi fotoğraflı kimlik gerekli olabilir.',
+      en: 'Visa, Mastercard and cash accepted. Cashless payment available. A refundable 3,000 TL cash deposit per stay may be requested for incidentals. Government-issued photo ID may be required.',
+    },
+  },
+  {
+    title: { tr: 'Evcil hayvan & Sigara', en: 'Pets & Smoking' },
+    body: {
+      tr: 'Evcil hayvan ve rehber hayvan kabul edilmemektedir. Tüm tesis sigara içilmeyen bir alandır.',
+      en: 'Pets and service animals are not allowed. The entire property is non-smoking.',
+    },
+  },
+  {
+    title: { tr: 'Çocuk politikası', en: 'Children policy' },
+    body: {
+      tr: 'Beşik, ilave yatak veya bebek mama sandalyesi için varıştan önce iletişime geçilmelidir. Tesiste çocuklar için uygun olmayabilecek balkon ve teras gibi açık alanlar vardır.',
+      en: 'Crib, extra bed, or high chair requests must be made before arrival. The property has open balconies/terraces that may not be suitable for young children.',
+    },
+  },
+  {
+    title: { tr: 'Erişilebilirlik', en: 'Accessibility' },
+    body: {
+      tr: 'Tesiste asansör yoktur (2 katlı yapı). Genel alanlarda karo ve parke döşeme, iyi aydınlatılmış giriş yolu. Özel ihtiyaçlar için varıştan önce bilgi verin.',
+      en: 'No elevator (2-storey building). Tile and hardwood floors, well-lit entrance. For specific access needs, please notify us before arrival.',
+    },
+  },
+  {
+    title: { tr: 'Güvenlik & Tescil', en: 'Safety & Registration' },
+    body: {
+      tr: 'Yangın söndürücü, güvenlik sistemi ve dış mekân aydınlatması mevcuttur. T.C. Konaklama Yeri Tescil No: 25803.',
+      en: 'Fire extinguisher, security system and outdoor lighting on site. Republic of Türkiye Accommodation Reg. No: 25803.',
+    },
+  },
+];
+
+// SSS — Hotels.com'dan
+export type FAQ = {
+  q: { tr: string; en: string };
+  a: { tr: string; en: string };
+};
+
+export const faqs: FAQ[] = [
+  {
+    q: {
+      tr: 'Paradise İmroz ücretsiz iptal sunuyor mu?',
+      en: 'Does Paradise İmroz offer free cancellation?',
+    },
+    a: {
+      tr: 'Evet, doğrudan bizden rezervasyon yaptırırsanız varışınızdan birkaç gün öncesine kadar ücretsiz iptal imkânı sunuyoruz. Kesin koşullar rezervasyon türünüze göre değişir; onay e-postanızda detaylar yer alır.',
+      en: 'Yes — when you book directly with us, free cancellation is available up to a few days before your arrival. Exact terms vary by booking type and are detailed in your confirmation email.',
+    },
+  },
+  {
+    q: { tr: 'Evcil hayvan kabul ediliyor mu?', en: 'Are pets allowed?' },
+    a: {
+      tr: 'Maalesef evcil hayvanlar ve rehber hayvanlar tesisimize kabul edilmemektedir.',
+      en: 'Unfortunately pets and service animals are not allowed at our property.',
+    },
+  },
+  {
+    q: { tr: 'Ücretsiz otopark var mı?', en: 'Is there free parking?' },
+    a: {
+      tr: 'Evet, tesiste ücretsiz, güvenli ve açık valesiz otopark mevcuttur. Önceden rezervasyon gerekmez.',
+      en: 'Yes — free, secure, on-site self-parking with no advance reservation needed.',
+    },
+  },
+  {
+    q: { tr: 'Giriş ve çıkış saatleri nedir?', en: 'What are the check-in and check-out times?' },
+    a: {
+      tr: 'Giriş 14:00\'tan itibaren herhangi bir saatte yapılabilir. Çıkış saati öğlen 12:00\'dir. Hızlı ve temassız giriş/çıkış imkânı sunuyoruz.',
+      en: 'Check-in is available any time after 14:00. Check-out is 12:00 noon. Express and contactless check-in/out are offered.',
+    },
+  },
+  {
+    q: { tr: 'Otelde ve yakınlarda hangi imkânlar var?', en: 'What activities are nearby?' },
+    a: {
+      tr: 'Tekne turu, balık tutma ve doğa yürüyüşü gibi etkinliklere yakındayız. Otelde piknik alanı, çitle çevrili bahçe ve mobilyalı balkonlar bulunur. Yakında segway kiralama ve dalış kulüpleri mevcuttur.',
+      en: 'Boat tours, fishing and hiking are all close by. The hotel has a picnic spot, a fenced garden and furnished balconies. Segway rental and dive clubs are nearby.',
+    },
+  },
+  {
+    q: { tr: 'Açık özel alan var mı?', en: 'Is there outdoor private space?' },
+    a: {
+      tr: 'Evet, sekiz odanın hepsinde mobilyalı ahşap balkon vardır. Geniş çitle çevrili ortak bahçemiz misafirlerimizin kullanımına açıktır.',
+      en: 'Yes, all eight rooms have a furnished wooden balcony. Our large fenced communal garden is also open to guests.',
+    },
+  },
+  {
+    q: { tr: 'Otel hangi bölgede?', en: 'Where exactly is the hotel?' },
+    a: {
+      tr: 'Gökçeada (eski adıyla İmroz) merkezinde, Fatih Mahallesi\'nde tarihi sokakta. Kaleköy Limanı araçla 9 dakika; Yıldız Koyu ve Belediye Plajı 11 dakika mesafededir.',
+      en: 'In the historic center of Gökçeada (formerly Imbros), Fatih neighborhood. Kaleköy Harbour is 9 minutes by car; Yıldız Cove and the Town Beach are 11 minutes away.',
+    },
+  },
+  {
+    q: { tr: 'Açık büfe kahvaltı dahil mi?', en: 'Is the open buffet breakfast included?' },
+    a: {
+      tr: 'Açık büfe kahvaltı isteğe bağlıdır, kişi başı 300-500 TL. Yerel zeytin, peynir ve mevsim ürünleriyle bölgede nadir bulunan zengin bir başlangıç.',
+      en: 'The open buffet breakfast is optional at 300-500 TL per person. A rich start with local olives, cheese and seasonal produce — rarely found in the region.',
+    },
+  },
 ];
 
 // Yakın restoran ve mekânlar (TripAdvisor verisi)
@@ -393,15 +528,24 @@ export const hotelInfo = {
   opened: 2023,
   rooms: 8,
   blocks: 2,
+  floors: 2,
   roomSize: 40,
-  rating: 4.9,
-  ratingScale: 5,
-  bookingRating: 10,
+  // Hotels.com Mayıs 2026
+  rating: 9.4,
+  ratingScale: 10,
+  reviewCount: 39,
+  ratingLabel: { tr: 'Olağanüstü', en: 'Exceptional' },
   awards: [
-    { tr: 'TripAdvisor Travelers\' Choice', en: "Tripadvisor Travelers' Choice" },
-    { tr: 'Booking.com son misafir puanı 10/10', en: 'Booking.com latest guest rating 10/10' },
+    { tr: 'Tripadvisor Travelers\' Choice', en: "Tripadvisor Travelers' Choice" },
+    { tr: 'Çiftler tarafından çok seviliyor', en: 'Loved by couples' },
+    { tr: 'Açık büfe kahvaltı', en: 'Open buffet breakfast' },
   ],
   season: { tr: 'Mayıs · Ekim arası', en: 'May · October season' },
   checkIn: '14:00',
-  checkOut: '11:00',
+  checkOut: '12:00',
+  // Yasal
+  registrationNo: '25803',
+  // Para
+  breakfastPrice: { min: 300, max: 500, unit: { tr: 'kişi', en: 'person' } },
+  cashDeposit: 3000,
 };

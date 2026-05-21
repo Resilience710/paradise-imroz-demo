@@ -59,8 +59,8 @@ export function Hero() {
           <div className="opacity-60 text-[0.7rem]">{t('40° 11′ K · 25° 53′ D', '40° 11′ N · 25° 53′ E')}</div>
           <div>{t('Mayıs · Ekim arası', 'May · October season')}</div>
           <div className="inline-flex items-center gap-2 mt-3 border border-cream/40 px-3 py-1.5 text-[0.62rem]">
-            <span className="text-terracotta">★</span>
-            <span>Tripadvisor Travelers&apos; Choice</span>
+            <span className="text-terracotta font-display text-base leading-none">9.4</span>
+            <span>{t('Hotels.com · 39 yorum', 'Hotels.com · 39 reviews')}</span>
           </div>
         </div>
       </div>

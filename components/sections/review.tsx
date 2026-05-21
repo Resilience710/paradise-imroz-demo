@@ -5,23 +5,28 @@ import { useLang } from '@/components/lang/lang-provider';
 import { hotelInfo } from '@/lib/data';
 
 export function Review() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   return (
     <section className="px-6 md:px-10 py-32 text-center bg-cream border-t border-line">
       <Reveal>
         <div className="max-w-[900px] mx-auto">
-          <div className="flex flex-wrap items-center justify-center gap-4 mb-10">
+          <div className="flex flex-wrap items-stretch justify-center gap-4 mb-12">
             <Badge
-              top={t("Tripadvisor", 'Tripadvisor')}
+              big={`${hotelInfo.rating}`}
+              top={t(hotelInfo.ratingLabel.tr, hotelInfo.ratingLabel.en)}
+              bottom={t(`${hotelInfo.reviewCount} yorum · Hotels.com`, `${hotelInfo.reviewCount} reviews · Hotels.com`)}
+            />
+            <Badge
+              top={t('Tripadvisor', 'Tripadvisor')}
               bottom={t("Travelers' Choice", "Travelers' Choice")}
             />
             <Badge
-              top="Booking.com"
-              bottom={t('Son misafir · 10 / 10', 'Latest guest · 10 / 10')}
+              top={t('Çiftler', 'Couples')}
+              bottom={t('tarafından çok seviliyor', 'love it 10/10')}
             />
             <Badge
-              top={t('Genel puan', 'Overall')}
-              bottom={`${hotelInfo.rating} / ${hotelInfo.ratingScale}`}
+              top={t('Bölgede nadir', 'Rare in region')}
+              bottom={t('Açık büfe kahvaltı', 'Open buffet breakfast')}
             />
           </div>
 
@@ -37,20 +42,24 @@ export function Review() {
           </p>
           <div className="text-[0.78rem] tracking-[0.3em] uppercase text-muted">
             <span className="block w-8 h-px bg-muted mx-auto mb-6" />
-            {t('Booking.com · Doğrulanmış konuk', 'Booking.com · Verified guest')}
+            {t('Hotels.com · Doğrulanmış konuk', 'Hotels.com · Verified guest')}
           </div>
-          <div className="mt-8 font-display italic text-aegean text-lg">{hotelInfo.rating} / {hotelInfo.ratingScale}</div>
+          <div className="mt-8 font-display italic text-aegean text-lg">
+            {hotelInfo.rating} / {hotelInfo.ratingScale} · {hotelInfo.reviewCount} {t('yorum', 'reviews')}
+          </div>
+          {lang === 'tr' ? null : null}
         </div>
       </Reveal>
     </section>
   );
 }
 
-function Badge({ top, bottom }: { top: string; bottom: string }) {
+function Badge({ top, bottom, big }: { top: string; bottom: string; big?: string }) {
   return (
     <div className="inline-flex flex-col items-center bg-bone border border-line px-5 py-3 min-w-[150px]">
+      {big && <div className="font-display text-3xl text-aegean leading-none mb-1">{big}</div>}
       <div className="text-[0.6rem] tracking-[0.25em] uppercase text-muted">{top}</div>
-      <div className="font-display text-base text-aegean italic mt-0.5">{bottom}</div>
+      <div className="font-display text-base text-aegean italic mt-0.5 text-center leading-tight">{bottom}</div>
     </div>
   );
 }

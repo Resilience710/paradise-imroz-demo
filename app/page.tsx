@@ -4,6 +4,7 @@ import { ActivitiesStrip } from '@/components/sections/activities-strip';
 import { RoomsTeaser } from '@/components/sections/rooms-teaser';
 import { LocationTeaser } from '@/components/sections/location-teaser';
 import { Review } from '@/components/sections/review';
+import { FAQ } from '@/components/sections/faq';
 import { ReservationCTA } from '@/components/sections/reservation-cta';
 
 export default function HomePage() {
@@ -15,6 +16,7 @@ export default function HomePage() {
       <RoomsTeaser />
       <LocationTeaser />
       <Review />
+      <FAQ />
       <ReservationCTA />
     </main>
   );

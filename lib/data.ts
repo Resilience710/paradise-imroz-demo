@@ -30,9 +30,9 @@ export const rooms: Room[] = [
     floor: 0,
     amenities: ['ac', 'balcony', 'bath', 'minibar', 'smart-tv', 'wifi', 'view-garden', 'entry'],
     images: [
-      'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=1600&q=85&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=1600&q=85&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=1600&q=85&auto=format&fit=crop',
+      '/photos/suit-1.png',
+      '/photos/suit-2.png',
+      '/photos/suit-3.png',
     ],
     description: {
       tr: "A Blok'un zemin katında, ahşap balkonu doğrudan yeşil bahçeye açılan müstakil girişli süit. 40 m²'lik geniş alanda oturma köşesi, Smart TV ve minibar. Sabah ışığı zeytin ağaçlarının arasından sızar.",
@@ -52,9 +52,9 @@ export const rooms: Room[] = [
     floor: 1,
     amenities: ['ac', 'balcony', 'bath', 'minibar', 'smart-tv', 'wifi', 'view-garden', 'entry'],
     images: [
-      'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=1600&q=85&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1600&q=85&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1591088398332-8a7791972843?w=1600&q=85&auto=format&fit=crop',
+      '/photos/suit-2.png',
+      '/photos/suit-3.png',
+      '/photos/suit-1.png',
     ],
     description: {
       tr: "A Blok'un üst katında, iki yöne açılan pencereleriyle aydınlık bir süit. Ahşap balkonundan bahçenin tamamını görür, sabah kahvenizi rüzgâr eşliğinde içersiniz. 40 m², Smart TV, minibar.",
@@ -74,9 +74,9 @@ export const rooms: Room[] = [
     floor: 0,
     amenities: ['ac', 'balcony', 'bath', 'minibar', 'smart-tv', 'wifi', 'entry'],
     images: [
-      'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=1600&q=85&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=1600&q=85&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=1600&q=85&auto=format&fit=crop',
+      '/photos/suit-3.png',
+      '/photos/suit-1.png',
+      '/photos/suit-2.png',
     ],
     description: {
       tr: "Sokağa bakan A Blok süitinde sabah çarşı sesleri uzaktan duyulur, akşam derin bir sessizlik kaplar. 40 m², ahşap detaylar, Smart TV, minibar. Müstakil girişli.",
@@ -96,9 +96,9 @@ export const rooms: Room[] = [
     floor: 1,
     amenities: ['ac', 'balcony', 'bath', 'minibar', 'smart-tv', 'wifi', 'view-garden', 'family', 'entry'],
     images: [
-      'https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=1600&q=85&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=1600&q=85&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=1600&q=85&auto=format&fit=crop',
+      '/photos/suit-1.png',
+      '/photos/suit-3.png',
+      '/photos/suit-2.png',
     ],
     description: {
       tr: 'Aileler için tasarlanmış 40 m² süit. King yatak + iki tek yatak, üst kat ahşap balkonu, geniş oturma alanı. Bahçeye bakar, Smart TV ve minibar. Çocuklu konuklar için ideal.',
@@ -118,9 +118,9 @@ export const rooms: Room[] = [
     floor: 0,
     amenities: ['ac', 'balcony', 'bath', 'minibar', 'smart-tv', 'wifi', 'view-garden', 'entry'],
     images: [
-      'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=1600&q=85&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1600&q=85&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=1600&q=85&auto=format&fit=crop',
+      '/photos/suit-2.png',
+      '/photos/suit-1.png',
+      '/photos/suit-3.png',
     ],
     description: {
       tr: "B Blok'un en sessiz köşesi. Bahçeye bakan ahşap balkon, kalın taş duvarlar sayesinde derin sessizlik. 40 m², Smart TV, minibar. Yazmak, okumak, dinlenmek için.",
@@ -140,9 +140,9 @@ export const rooms: Room[] = [
     floor: 1,
     amenities: ['ac', 'balcony', 'bath', 'minibar', 'smart-tv', 'wifi', 'view-garden', 'entry'],
     images: [
-      'https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=1600&q=85&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=1600&q=85&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=1600&q=85&auto=format&fit=crop',
+      '/photos/suit-3.png',
+      '/photos/suit-2.png',
+      '/photos/suit-1.png',
     ],
     description: {
       tr: 'Geniş oturma köşesi olan üst kat süiti. Akşamları balkondan günbatımı, pencerelerden çam ağaçlarının kokusu. 40 m², Smart TV, minibar. Müstakil girişli.',
@@ -162,9 +162,9 @@ export const rooms: Room[] = [
     floor: 0,
     amenities: ['ac', 'balcony', 'bath', 'minibar', 'smart-tv', 'wifi', 'entry'],
     images: [
-      'https://images.unsplash.com/photo-1551776235-dde6d4829808?w=1600&q=85&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1600&q=85&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1591088398332-8a7791972843?w=1600&q=85&auto=format&fit=crop',
+      '/photos/suit-1.png',
+      '/photos/suit-2.png',
+      '/photos/suit-3.png',
     ],
     description: {
       tr: 'Sokağa bakan B Blok süiti. Sabahları çarşı, akşamları sessizlik. Ahşap balkon, taş cephe. 40 m², Smart TV, minibar. Müstakil girişli.',
@@ -184,9 +184,9 @@ export const rooms: Room[] = [
     floor: 1,
     amenities: ['ac', 'balcony', 'bath', 'minibar', 'smart-tv', 'wifi', 'view-garden', 'entry'],
     images: [
-      'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=1600&q=85&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=1600&q=85&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=1600&q=85&auto=format&fit=crop',
+      '/photos/suit-2.png',
+      '/photos/suit-3.png',
+      '/photos/suit-1.png',
     ],
     description: {
       tr: "B Blok'un en büyük süiti. Geniş ahşap balkondan adanın ufkunda mavi bir şerit görünür. 40 m², oturma alanı, Smart TV, minibar. Sevdiğimiz oda.",

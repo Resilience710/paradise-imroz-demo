@@ -17,10 +17,9 @@ export function Hero() {
       <div
         className="absolute inset-0 bg-cover transition-transform duration-[8000ms] ease-out"
         style={{
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=2400&q=85&auto=format&fit=crop')",
+          backgroundImage: "url('/photos/cephe-gece.png')",
           backgroundPosition: 'center 50%',
-          opacity: 0.65,
+          opacity: 0.75,
           transform: loaded ? 'scale(1)' : 'scale(1.05)',
         }}
       />
